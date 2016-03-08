@@ -44,85 +44,35 @@
 )
 
 ; Reglas para inferir una relación dual concreta entre dos personas
-(defrule InfRelDualHH
+(defrule InfRelDual
 	(RelacionDual ?R1 ?R2)
 	(Relacion ?R1 ?X ?Y & ~?X)
-	(Persona ?X Hombre)
-	(Persona ?Y Hombre)
 	=>
-	(assert (Relacion ?R2 ?Y ?X))
+	(assert (AsignarGenero ?R2 ?Y ?X))
 )
-(defrule InfRelDualHM
-	(RelacionDual ?R1 ?R2)
-	(Relacion ?R1 ?X ?Y & ~?X)
-	(Persona ?X Hombre)
-	(Persona ?Y Mujer)
-	(RelacionGenero ?R2 ?RR2)
-	=>
-	(assert (Relacion ?RR2 ?Y ?X))
-)
-(defrule InfRelDualMH
-	(RelacionDual ?R1 ?R2)
-	(RelacionGenero ?R1 ?RR1)
-	(Relacion ?RR1 ?X ?Y & ~?X)
+(defrule AsignarGenFem
+	?fase <- (AsignarGenero ?R ?X ?Y)
 	(Persona ?X Mujer)
-	(Persona ?Y Hombre)
+	(RelacionGenero ?R ?RF)
 	=>
-	(assert (Relacion ?R2 ?Y ?X))
+	(assert (Relacion ?RF ?X ?Y))
+	(retract ?fase)
 )
-(defrule InfRelDualMM
-	(RelacionDual ?R1 ?R2)
-	(RelacionGenero ?R1 ?RR1)
-	(RelacionGenero ?R2 ?RR2)
-	(Relacion ?RR1 ?X ?Y & ~?X)
-	(Persona ?X Mujer)
-	(Persona ?Y Mujer)
+(defrule AsignarGenHombre
+	?fase <- (AsignarGenero ?R ?X ?Y)
+	(Persona ?X Hombre)
 	=>
-	(assert (Relacion ?RR2 ?Y ?X))
+	(assert (Relacion ?R ?X ?Y))
+	(retract ?fase)
 )
 
 ; Reglas para inferir una relación de composición concreta entre dos personas
-(defrule InfRelComposicionHH
-	(Composicion ?R1 ?R2 ?R3)
+(defrule InfRelComposicion
 	(Relacion ?R1 ?X ?Y)
 	(Relacion ?R2 ?Y & ~?X ?Z & ~?X & ~?Y)
-	(Persona ?X Hombre)
-	(Persona ?Y Hombre)
-	=>
-	(assert (Relacion ?R3 ?X ?Z))
-)
-(defrule InfRelComposicionHM
 	(Composicion ?R1 ?R2 ?R3)
-	(Relacion ?R1 ?X ?Y)
-	(RelacionGenero ?R2 ?R4)
-	(Relacion ?R4 ?Y & ~?X ?Z & ~?X & ~?Y)
-	(Persona ?X Hombre)
-	(Persona ?Y Mujer)
 	=>
-	(assert (Relacion ?R3 ?X ?Z))
-)
-(defrule InfRelComposicionMH
-	(Composicion ?R1 ?R2 ?R3)
-	(RelacionGenero ?R1 ?R4)
-	(Relacion ?R4 ?X ?Y)
-	(Relacion ?R2 ?Y & ~?X ?Z & ~?X & ~?Y)
-	(RelacionGenero ?R3 ?R5)
-	(Persona ?X Mujer)
-	(Persona ?Y Hombre)
-	=>
-	(assert (Relacion ?R5 ?X ?Z))
-)
-(defrule InfRelComposicionMM
-	(Composicion ?R1 ?R2 ?R3)
-	(RelacionGenero ?R1 ?RR1)
-	(RelacionGenero ?R2 ?RR2)
-	(Relacion ?RR1 ?X ?Y)
-	(Relacion ?RR2 ?Y & ~?X ?Z & ~?X & ~?Y)
-	(RelacionGenero ?R3 ?RR3)
-	(Persona ?X Mujer)
-	(Persona ?Y Mujer)
-	=>
-	(assert (Relacion ?RR3 ?X ?Z))
+	(assert (AsignarGenero ?R3 ?X ?Z))
 )
 
 ; Reglas para leer e imprimr una búsqueda
@@ -132,14 +82,17 @@
 	(bind ?Respuesta1 (read))
 	(printout t "Introduzca el nombre de la segunda persona" crlf)
 	(bind ?Respuesta2 (read))
-	(assert (Imprimir ?Respuesta1 ?Respuesta2))
+	(assert (Buscado1 ?Respuesta1))
+	(assert (Buscado2 ?Respuesta2))
 )
 (defrule ImprimirP
-	?fase <- (Imprimir ?X ?Y)
+	?fase1 <- (Buscado1 ?X)
+	?fase2 <- (Buscado2 ?Y)
 	(Relacion ?R ?X ?Y)
 	=>
 	(printout t ?X " es " ?R " de " ?Y crlf)
-	(retract ?fase)
+	(retract ?fase1)
+	(retract ?fase1)
 )
 
 ; Datos
@@ -181,3 +134,6 @@
 	(Relacion Madre Almudena Mario)
 	(Relacion Madre Almudena Alberto)
 )
+
+(deffacts Prof
+	(NivelProfundidad 10))
