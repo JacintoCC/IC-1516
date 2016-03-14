@@ -68,8 +68,10 @@
 
 ; Reglas para inferir una relación de composición concreta entre dos personas
 (defrule InfRelComposicion
-	(Relacion ?R1 ?X ?Y)
-	(Relacion ?R2 ?Y & ~?X ?Z & ~?X & ~?Y)
+	(RelacionGenero ?R1 ?RG1)
+	(Relacion ?R1|?RG1 ?X ?Y)
+	(RelacionGenero ?R2 ?RG2)
+	(Relacion ?R2|?RG2 ?Y & ~?X ?Z & ~?X & ~?Y)
 	(Composicion ?R1 ?R2 ?R3)
 	=>
 	(assert (AsignarGenero ?R3 ?X ?Z))
@@ -92,7 +94,7 @@
 	=>
 	(printout t ?X " es " ?R " de " ?Y crlf)
 	(retract ?fase1)
-	(retract ?fase1)
+	(retract ?fase2)
 )
 
 ; Datos
@@ -134,6 +136,3 @@
 	(Relacion Madre Almudena Mario)
 	(Relacion Madre Almudena Alberto)
 )
-
-(deffacts Prof
-	(NivelProfundidad 10))
