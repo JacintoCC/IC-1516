@@ -1,0 +1,135 @@
+\documentclass[11pt,leqno]{article}
+\usepackage[spanish,activeacute]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{amsthm}
+\usepackage[hidelinks]{hyperref}
+
+
+% Título y autor
+\title{Práctica final\\
+		Ingeniería del conocimiento\\
+		Desarrollo de un sistema experto}
+		
+\author{Jacinto Carrasco Castillo 	\\
+		N.I.F. 32056356-Z			\\ 
+		\href{jacintocc@correo.ugr.es}{jacintocc@correo.ugr.es}}
+		
+% Definición de estilo de definición
+\newtheoremstyle{definition_wo_parentheses}
+  {\topsep}% measure of space to leave above the theorem. E.g.: 3pt
+  {\topsep}% measure of space to leave below the theorem. E.g.: 3pt
+  {}% name of font to use in the body of the theorem
+  {0pt}% measure of space to indent
+  {\bfseries}% name of head font
+  {.}% punctuation between head and body
+  { }% space after theorem head; " " = normal interword space
+  {\thmname{#1}\thmnumber{ #2.}\thmnote{ #3}}
+  
+  
+\theoremstyle{definition_wo_parentheses}	
+\newtheorem{definicion}{Definición}[subsection]
+
+\theoremstyle{plain}	
+\newtheorem{regla}{Regla}[subsection]
+
+\theoremstyle{remark}	
+\newtheorem{ejemplo}{Ejemplo}[subsection]
+
+
+\begin{document}
+
+% Título y autor
+\maketitle
+
+% Índice
+\tableofcontents
+
+\section{Resumen}
+
+\section{Descripción del proceso de desarrollo}
+
+\subsection{Sesión 1: 25 de abril}
+
+\subsubsection{Información obtenida}
+
+	Se obtienen en un primer momento cuestiones generales del sistema y del módulo de detección de valores peligrosos.	
+	
+\begin{enumerate}
+\item El sistema estará organizado en cuatro módulos:
+	\begin{enumerate}[I]
+	\item Toma de decisiones
+	\item Detección de valores infavalorados
+	\item Detección de valores chollo
+	\item Detección de valores peligrosos
+\end{enumerate}
+\item Un valor se considerará peligroso si está cayendo más que la media de los valores de su sector.
+\item Los sectores tienen distinto grado de estabilidad.
+\item Dispondremos de la tendencia del sector.
+\item El sistema tiene un módulo de arranque.
+\item El sistema almacenará que ha habido una noticia en una fecha determinada.
+\item Las noticias tienen distinto alcance. 
+\item Las noticias con un determinado alcance influyen sobre los valores de ese ámbito. Los ámbitos de menor dimensión son más determinantes que los ámbitos superiores.
+\item El módulo de detección de infravalorados y sobrevalorados no se ve afectado por las noticias y la inestabilidad.
+\item Sólo observaremos los valores día a día, por lo que no influirán en la toma de decisiones los repuntes diarios.
+\end{enumerate}
+	
+\begin{definicion}[Variación]
+	La variación (caída/subida) es la diferencia entre el valor frente al que se está midiendo la variación y el valor actual.
+\end{definicion} 
+
+	Pasamos a tratar ahora sobre cuestiones específicas del módulo:
+	
+\begin{enumerate}
+\item La salida del módulo es añadir hechos.
+\item Las reglas serán simples.
+\item Las entradas son los valores de las inversiones en los últimos días y su relación con los movimientos en cada sector.
+\end{enumerate}
+
+\begin{definicion}[Valor peligroso]
+	Diremos que un valor es peligroso si cae más que el sector por cinco días.
+\end{definicion}
+
+\begin{ejemplo}
+	Supongamos que durante cinco días el sector bancario baja un $5\%$ y Bankia baja un $10\%$. Entonces consideraremos que el valor de Bankia es peligroso.
+\end{ejemplo}
+
+\begin{regla}[Valor peligroso]
+	Si un valor cae durante cinco días y ha caído más de un $5\%$ con respecto a su sector, se considera un valor peligroso.
+\end{regla}
+
+\paragraph{Estabilidad} La estabilidad de un determinado valor viene dada por las noticias sobre el valor y el sector al que pertenezca. La estabilidad influye, como veremos a continuación, en la toma de decisiones según sus valores. Un valor inestable que se vea afectado por una noticia positiva se considerará estable durante dos días a partir de la llegada de la noticia. Un valor que se considere estable pasará también a ser inestable por dos días si se introduce una noticia negativa que le afecte. Se tienen las siguientes consideraciones sobre los sectores:
+
+\begin{enumerate}[a]
+\item Servicios: Es inestable si la economía va mal.
+\item Construcción: Sector inestable.
+\end{enumerate}
+
+\begin{regla}[Valor inestable peligroso]
+	Si un valor inestable cae durante tres días y ha caído más de un $5\%$ con respecto a su sector, se considera un valor peligroso.
+\end{regla}
+
+\subsection{Sesión 2:  9 de mayo}
+\subsection{Sesión 3: 16 de mayo}
+\subsection{Sesión 4: 23 de mayo}
+\subsection{Sesión 5: 30 de mayo}
+\subsection{Sesión 6: 7 de junio}
+\subsection{Sesión 7: 14 de junio}
+
+\section{Descripción del sistema desarrollado}
+
+\subsection{Variables de entrada del problema}
+\subsection{Variables de salida del problema}
+\subsection{Conocimiento global del sistema}
+\subsection{Especificación de los módulos desarrollados}
+\subsection{Estructura de funcionamiento del esquema de razonamiento}
+\subsection{Lista de hechos usados y representación}
+\subsection{Hechos y reglas de cada módulo}
+
+
+\section{Manual de uso}
+
+
+\end{document}
