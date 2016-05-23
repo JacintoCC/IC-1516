@@ -1,1 +1,8 @@
 *.exe
+*.pdf
+*.gz
+*.toc
+*.aux
+*.log
+*.out
+*.zip

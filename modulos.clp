@@ -26,6 +26,16 @@
   (assert (Confirm ?Respuesta))
 )
 
+(defrule WrongModule
+  ?f <- (ModuloProv ?X)
+  (not (Modulo ?X))
+  =>
+  (printout t "Seleccione el módulo a cargar" crlf)
+  (bind ?Respuesta (read))
+  (retract ?f)
+	(assert (ModuloProv ?Respuesta))
+)
+
 (defrule Confirm
   ?f1 <- (Confirm S)
   ?f2 <- (ModuloProv ?X)
