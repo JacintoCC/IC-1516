@@ -13,6 +13,7 @@
   (field Var5Dias)
   (field Perd3Consec)
   (field Perd5Consec)
+  (field VarRespSector5Dias)
   (field PerdRespSectorGrande)
   (field VarMes)
   (field VarTri)
@@ -22,11 +23,11 @@
 
 (deftemplate Sector
   (field Nombre)
-  (field Precio)
   (field VarDia)
   (field Capitalizacion)
   (field PER)
   (field RPD)
+  (field PorcIbex)
   (field Var5Dias)
   (field Perd3Consec)
   (field Perd5Consec)
@@ -34,4 +35,16 @@
   (field VarTri)
   (field VarSem)
   (field VarAnual)
+)
+
+(deftemplate Noticia
+  (field Nombre)
+  (field Tipo)
+  (field Antiguedad)
+)
+
+(deftemplate Cartera
+  (field Nombre)
+  (field Acciones)
+  (field Valor)
 )
