@@ -26,7 +26,7 @@
   (assert (Estabilidad ?NombreValor ?Estabilidad))
 )
 
-(defrule NoticiaSector
+(defrule NoticiaEconomia
   (declare (salience 38))
   (Noticia (Nombre Economia) (Tipo ?Tipo))
   (Valor (Nombre ?NombreValor) (Sector ?NombreSector))
@@ -42,7 +42,7 @@
   (Valor (Nombre ?Nombre) (Sector Construccion))
   (not (Estabilidad ?Nombre Estable))
   =>
-  (Estabilidad ?Nombre Inestable)
+  (assert (Estabilidad ?Nombre Inestable))
 )
 
 (defrule DefectoServicios
@@ -52,5 +52,5 @@
   (Valor (Nombre ?Nombre) (Sector Servicios))
   (not (Estabilidad ?Nombre Estable))
   =>
-  (Estabilidad ?Nombre Inestable)
+  (assert (Estabilidad ?Nombre Inestable))
 )
