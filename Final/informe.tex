@@ -61,7 +61,7 @@
 \item El sistema estará organizado en cuatro módulos:
 	\begin{enumerate}[I]
 	\item Toma de decisiones
-	\item Detección de valores infavalorados
+	\item Detección de valores infravalorados
 	\item Detección de valores chollo
 	\item Detección de valores peligrosos
 \end{enumerate}
@@ -111,13 +111,26 @@
 	Si un valor inestable cae durante tres días y ha caído más de un $5\%$ con respecto a su sector, se considera un valor peligroso.
 \end{regla}
 
-\subsection{Sesión 2:  9 de mayo}
-\subsection{Sesión 3: 16 de mayo}
-\subsection{Sesión 4: 23 de mayo}
-\subsection{Sesión 5: 30 de mayo}
-\subsection{Sesión 6: 7 de junio}
-\subsection{Sesión 7: 14 de junio}
+\subsection{Diferentes sesiones}
 
+	Durante el resto de sesiones se han ido planteando dudas al experto a partir de la documentación con el conocimiento del SE inversor conforme éstas iban surgiendo.
+	
+\paragraph{Estructura en módulos} La estructura en módulos del sistema es distinta a la que se extrajo del experto en la primera sesión. No hay módulo de detección de valores chollos y la 
+
+\begin{enumerate}
+\item[0] módulo de entrada de datos y deducción de valores inestables
+\item[1] módulo de detección de valores peligrosos
+\item[2] módulo de detección de valores infravalorados y sobrevalorados
+\item[3] módulo de realización de propuestas
+	\begin{enumerate}[a]
+		\item obtención de posibles propuestas
+		\item realización de posibles propuestas
+	\end{enumerate}
+\end{enumerate}
+	
+	
+	
+	
 \section{Descripción del sistema desarrollado}
 
 \subsection{Variables de entrada del problema}

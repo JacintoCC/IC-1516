@@ -1,9 +1,9 @@
-; Definición de los valores a leer
+; Definición del primer fichero que se va a leer
 (deffacts readAnalisis
   (ReadAnalisis "Datos/Analisis.txt")
 )
 
-; Ejemplo Leer datos de un fichero, procesarlos y actualizarlos en el fichero (CLIPS)
+; Regla con una alta prioridad para leer el fichero con el análisis
 (defrule openAnalisis
   (declare (salience 50))
   (ReadAnalisis ?NameFile)
@@ -12,6 +12,7 @@
   (assert (SeguirLeyendo))
 )
 
+; Lectura del fichero con el análisis y dotación de forma en templates
 (defrule readingAnalisis
   (declare (salience 49))
   (ReadAnalisis ?NameFile)
@@ -46,6 +47,7 @@
     (assert (SeguirLeyendo)))
 )
 
+; Cierre del fichero de análisis
 (defrule closeFile
   (declare (salience 48))
   ?f <- (ReadAnalisis ?NameFile)
@@ -55,6 +57,7 @@
   (assert (ReadSectores "Datos/AnalisisSectores.txt"))
 )
 
+; Lectura del análisis de los sectores
 (defrule openSectores
   (declare (salience 47))
   (ReadSectores ?NameFile)
@@ -63,6 +66,7 @@
   (assert (SeguirLeyendo))
 )
 
+; Lectura del análisis de los sectores y dotación de forma
 (defrule readingSectores
   (declare (salience 46))
   (ReadSectores ?NameFile)
@@ -90,8 +94,9 @@
     (assert (SeguirLeyendo)))
 )
 
+; Cierre del fichero de sectores
 (defrule closefileSectores
-  (declare (salience 48))
+  (declare (salience 45))
   ?f <- (ReadSectores ?NameFile)
   =>
   (close mydata)
@@ -101,15 +106,16 @@
 
 ; Lectura de Noticias
 (defrule openNoticias
-  (declare (salience 45))
+  (declare (salience 44))
   (ReadNoticias ?NameFile)
   =>
   (open ?NameFile mydata)
   (assert (SeguirLeyendo))
 )
 
+; Lectura de las noticias y dotación de forma
 (defrule readingNoticias
-  (declare (salience 44))
+  (declare (salience 43))
   (ReadNoticias ?NameFile)
   ?f <- (SeguirLeyendo)
   =>
@@ -124,8 +130,9 @@
     (assert (SeguirLeyendo)))
 )
 
+; Cierre del archivo de noticias
 (defrule closefileNoticias
-  (declare (salience 48))
+  (declare (salience 42))
   ?f <- (ReadNoticias ?NameFile)
   =>
   (close mydata)
@@ -135,15 +142,16 @@
 
 ; Lectura de Cartera
 (defrule openCartera
-  (declare (salience 43))
+  (declare (salience 41))
   (ReadCartera ?NameFile)
   =>
   (open ?NameFile mydata)
   (assert (SeguirLeyendo))
 )
 
+; Lectura de los valores en la cartera y dotación de forma
 (defrule readingCartera
-  (declare (salience 42))
+  (declare (salience 40))
   (ReadCartera ?NameFile)
   ?f <- (SeguirLeyendo)
   =>
@@ -158,10 +166,12 @@
     (assert (SeguirLeyendo)))
 )
 
+; Cierre del archivo de la cartera y entrada en el módulo 0
 (defrule closefileCartera
-  (declare (salience 48))
+  (declare (salience 39))
   ?f <- (ReadCartera ?NameFile)
   =>
   (close mydata)
   (retract ?f)
+  (assert (Modulo Modulo0))
 )

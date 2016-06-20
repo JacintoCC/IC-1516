@@ -48,3 +48,7 @@
   (field Acciones)
   (field Valor)
 )
+
+(deffacts PrecioDinero
+  (PrecioDinero 0)
+)
