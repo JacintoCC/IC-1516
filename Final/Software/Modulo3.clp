@@ -1,10 +1,11 @@
+; Regla para la venta de valores peligrosos
 (defrule VentaPeligrosos
   (Modulo Modulo3)
   (Peligroso ?Nombre ?ExplicacionPeligroso)
   (Valor (Nombre ?Nombre) (VarMes ?VarMes) (Sector ?Sector) (RPD ?RPD))
   (test (< ?VarMes 0))
   (Sector (Nombre ?Sector) (VarMes ?varSectorMes))
-  (test (< (+ ?varSectorMes ?VarMes) -3))
+  (test (< (- ?VarMes ?varSectorMes) -3))
   =>
   (bind ?RE (- 20 (* ?RPD 100)))
   (assert (Propuesta Vender ?Nombre ?RE
@@ -17,6 +18,7 @@
               "%.")))
 )
 
+; Regla para proponer la inversión en infravalorados
 (defrule InversionInfravalorados
   (Modulo Modulo3)
   (Infravalorado ?Nombre ?ExplicacionInfravalorado)
@@ -25,7 +27,7 @@
   (Cartera (Nombre Disponible) (Valor ?Disponible))
   (test (> ?Disponible 0))
   =>
-  (bind ?RE (+ (/ (*  (- ?PERmedio ?PER) 20) ?PER) ?RPD))
+  (bind ?RE (+ (/ (*  (- ?PERmedio ?PER) 20) ?PER) (* 100 ?RPD)))
   (assert (Propuesta Invertir ?Nombre ?RE
     (str-cat "Esta empresa está infravalorada y seguramente el PER tienda al PER medio en 5 años, con lo que se debería revalorizar un  "
               ?RE
@@ -34,16 +36,17 @@
               "% de beneficios por dividendos")))
 )
 
+; Regla para proponer la venta de valores sobrevalorados
 (defrule VentaSobrevalorados
   (Modulo Modulo3)
   (Sobrevalorado ?Nombre ?ExplicacionSobrevalorado)
-  (Cartera (Nombre ?Nombre) (Acciones ?Cantidad))
+  (Cartera (Nombre ?Nombre) (Valor ?Valor))
   (Valor (Nombre ?Nombre) (Precio ?Valor) (PER ?PER) (RPD ?RPD) (Sector ?Sector) (VarAnual ?VarAnual))
   (Sector (Nombre ?Sector) (PER ?PERmedio))
   (PrecioDinero ?PrecioDinero)
   (test (< (+ ?RPD ?VarAnual) (+ 5 ?PrecioDinero)))
-  =>;dividendos = RPD * inversión
-  (bind ?RE (- (/ (- ?PER ?PERmedio) (* 5 ?PER)) ?RPD))
+  =>
+  (bind ?RE (- (/ (- ?PER ?PERmedio) (* 5 ?PER)) (* 100 ?RPD)))
   (assert (Propuesta Venta ?Nombre ?RE
     (str-cat "Esta empresa está sobrevalorada porque"
               ?ExplicacionSobrevalorado
@@ -54,6 +57,7 @@
               "% de beneficios por dividendos, saldría rentable")))
 )
 
+; Regla para proponer el cambio de un valor por otro más rentable
 (defrule CambiarInversion
   (Modulo Modulo3)
   ; Empresa 1
@@ -61,7 +65,7 @@
   (not (Sobrevalorado ?Nombre1 ?))
 
   ;Empresa 2
-  (Valor (Nombre ?Nombre2) (RPD ?RPD2) (VarAnual ?VarAnual2))
+  (Valor (Nombre ?Nombre2~?Nombre1) (RPD ?RPD2) (VarAnual ?VarAnual2))
   (Cartera (Nombre ?Nombre2) (Acciones ?Cantidad))
   (not (Infravalorado ?Nombre2 ?))
 

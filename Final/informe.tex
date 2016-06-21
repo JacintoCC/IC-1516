@@ -128,9 +128,39 @@
 	\end{enumerate}
 \end{enumerate}
 	
+\begin{regla}[Valor inestable - Servicios]
+	Si la economía está bajando, los valores del sector servicios son inestables por defecto. Se considerará, según el experto, que la economía está bajando si tiene pérdidas durante cinco días. 
+\end{regla}	
+
+\begin{regla}[Detección de valores infravalorados - Repunte]
+	Si la empresa ha caído bastante (más de un $30\%$) en los últimos 3,6, ó 12 meses y ha subido pero no mucho (según el experto, menos de un $10\%$) en el último mes y el PER es bajo, la empresa está infravalorada.
+\end{regla}	
+
+\begin{regla}[Detección de valores infravalorados - Valor mejor que su sector]
+	Si la empresa es grande, el RPD es alto y el PER Mediano, además no está bajando (ha crecido en el global de la última semana) y se comporta mejor que su sector (su variación en la última semana es mayor que la del sector), la empresa está infravalorada.
+\end{regla}	
+
+\begin{definicion}[Rendimiento esperado]
+	Entendemos el rendimiento esperado como la suma de la revalorización anual esperada más los dividendos anuales esperados. Nos permitirá ordenar las posibles operaciones para su recomendación.
+\end{definicion}
+
+\paragraph{Rendimiento esperado} Para las reglas dadas por el experto, calcularemos de forma distinta el rendimiento esperado, que repercutirá en el orden de selección de las medidas a proponer al usuario.
+
+\begin{regla}[Inversión en empresas infravaloradas]
+	 Si una empresa está infravalorada y el usuario tiene  dinero para invertir proponer invertir el dinero en las acciones de la empresa. Posteriormente se preguntará al usuario la cantidad a invertir y no se contemplan más reglas para decidir cuánto invertir en cada valor o sector.
+\end{regla}	
 	
-	
-	
+\begin{definicion}[Precio del dinero]
+	Tipo de interés fijado por el Banco Central Europeo para el préstamo de dinero a las entidades financieras. 
+\end{definicion}
+
+\begin{regla}[Venta de empresas sobrevaloradas]
+	Si una empresa de mi cartera está sobrevalorada y el rendimiento por año $<5 +\mathbf{precio del dinero}$ proponer vender las acciones de esa empresa. Entendemos como el rendimiento por año la suma del RPD$\% +$ la variación del precio de las acciones que esperamos obtener en el año siguiente, que se puede estimar como la variación del último año.
+\end{regla}	
+
+\begin{regla}[Cambio por valores más rentables]
+	 Si una empresa no está sobrevalorada y su RPD es mayor que el rendimiento esperado de una empresa de mi cartera que no está infravalorada más el $1\%$ de comisión por la transacción, proponer cambiar las acciones de una empresa por las de la otra. Aquí se calcula el rendimiento esperado de una empresa con la descripción anterior.
+\end{regla}
 \section{Descripción del sistema desarrollado}
 
 \subsection{Variables de entrada del problema}

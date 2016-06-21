@@ -92,14 +92,15 @@
 (defrule DeteccionInfravalorados3
   (Modulo Modulo2)
   (Valor (Nombre ?Nombre) (Tamano GRANDE) (EtiqRPD Alto) (EtiqPER Mediano)
-          (Sector ?Sector) ())
-  (Sector (Nombre ?Sector) (VarDia ?varsector))
-  (test (> ?var ?varsector))
-  (test (> ?var 0))
+          (Sector ?Sector) (Var5Dias ?Var5Dias) (VarRespSector5Dias ?VarSector))
+  (test (> ?Var5Dias 0))
+  (test (> ?Var5Dias ?VarSector))
   =>
   (assert (Infravalorado ?Nombre " la empresa es grande, el RPD es alto y el PER mediano, no está bajando y funciona mejor que su sector."))
 )
 
+; Regla para salir del módulo 2
+;   y entrar en el módulo 3
 (defrule SalirModulo2
   (declare (salience -1))
   ?f <- (Modulo Modulo2)
