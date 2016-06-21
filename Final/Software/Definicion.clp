@@ -19,6 +19,8 @@
   (field VarTri)
   (field VarSem)
   (field VarAnual)
+  (field RPA
+    (default 'NA'))
 )
 
 (deftemplate Sector
@@ -47,6 +49,13 @@
   (field Nombre)
   (field Acciones)
   (field Valor)
+)
+
+(deftemplate Propuesta
+  (field Operacion)
+  (field Empresa)
+  (field RE)
+  (field Explicacion)
 )
 
 (deffacts PrecioDinero
