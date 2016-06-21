@@ -56,7 +56,7 @@
   =>
   (bind ?RE (- (/ (- ?PER ?PERmedio) (* 5 ?PER)) (* 100 ?RPD)))
   (assert (Propuesta
-    (Operacion Venta)
+    (Operacion Vender)
     (Empresa ?Nombre)
     (RE ?RE)
     (Explicacion (str-cat "Esta empresa está sobrevalorada porque"
@@ -87,7 +87,8 @@
   (bind ?RE (- (* 100 ?RPD1) (+ 1 ?RPA2)))
   (assert (Propuesta
     (Operacion IntercambiarValores)
-    (Empresa (str-cat ?Nombre1 "-" ?Nombre2))
+    (Empresa ?Nombre1)
+    (Empresa2 ?Nombre2)
     (RE ?RE)
     (Explicacion (str-cat  ?Nombre1
                         " debe tener una revalorización acorde con la evolución de la bolsa. Por dividendos se espera un "

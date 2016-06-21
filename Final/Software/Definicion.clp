@@ -56,6 +56,8 @@
   (field Empresa)
   (field RE)
   (field Explicacion)
+  (field Empresa2
+    (default NA))
 )
 
 (deffacts PrecioDinero

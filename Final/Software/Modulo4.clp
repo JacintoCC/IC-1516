@@ -92,3 +92,58 @@
   (close mydata)
   (exit)
 )
+
+; Mostrar mejor resultado
+(defrule MostrarMejorResultado
+  (Modulo Modulo4)
+  ?f1 <- (Respuesta 1)
+  ?f2 <- (Propuesta (Operacion ?Op) (Empresa ?Emp) (RE ?RE1) (Explicacion ?Exp) (Empresa2 ?Emp2))
+  (not  (and (Propuesta (RE ?RE2)) (test(> ?RE2 ?RE1))))
+  =>
+  (retract ?f1)
+  (printout t ?Exp crlf)
+  (printout t "¿Desea llevar a cabo esta operación? S/N"  crlf)
+  (bind ?Respuesta (read))
+  (if (eq ?Respuesta S) then
+    (Operacion ?Op ?Empresa ?Empresa2)
+    (retract ?f2))
+  (printout t "Pulse una de las siguientes teclas para acceder a las opciones del menú" crlf)
+  (assert (PrintMenu))
+)
+
+(defrule VentaAcciones
+  (Modulo Modulo4)
+  ?f <- (Operacion Vender ?Empresa NA)
+  ?modDisponible <- (Cartera (Nombre DISPONIBLE) (Valor ?Disponible))
+  ?accionesVendidas <- (Cartera (Nombre ?Empresa) (Valor ?Valor))
+  =>
+  (retract ?f)
+  (retract ?accionesVendidas)
+  (modify ?modDisponible (Valor (+ ?Disponible ?Valor)) (Acciones (+ ?Disponible ?Valor)))
+)
+
+(defrule EfectuarInversion
+  (Modulo Modulo4)
+  ?f <- (Operacion Invertir ?Empresa NA)
+  ?modDisponible <- (Cartera (Nombre DISPONIBLE) (Valor ?Disponible))
+  (Valor (Nombre ?Empresa) (Precio ?Precio))
+  =>
+  (retract ?f)
+  (printout t "Introduzca la cantidad a invertir (<=" " ?Disponible ") S/N"  crlf)
+  (bind ?Respuesta (read))
+  (if (and (<= ?Respuesta ?Disponible) (> ?Respuesta 0)) then
+    (modify ?modDisponible (Valor (- ?Disponible ?Respuesta)) (Acciones (- ?Disponible ?Respuesta)))
+    (assert (Cartera (Nombre ?Empresa) (Valor ?Respuesta) (Acciones (/ ?Respuesta ?Precio))))
+    )
+)
+
+(defrule IntercambioValores
+  (Modulo Modulo4)
+  ?f <- (Operacion IntercambiarValores ?Empresa1 ?Empresa2)
+  ?accionesVendidas <- (Cartera (Nombre ?Empresa1) (Valor ?Valor))
+  (Valor (Nombre ?Empresa2) (Precio ?Precio))
+  =>
+  (retract ?f)
+  (retract ?accionesVendidas)
+  (assert (Cartera (Nombre ?Empresa2) (Valor ?Valor) (Acciones (/ ?Valor ?Precio))))
+)
