@@ -3,8 +3,10 @@
 (defrule DefectoConstruccion
   (Modulo Modulo0)
   (Valor (Nombre ?Nombre) (Sector Construccion))
-  (not (Noticia (Nombre Construcción) (Tipo Buena)))
-  (not (Noticia (Nombre ?Nombre) (Tipo Buena)))
+  (not (and (Noticia (Nombre Construcción) (Tipo Buena) (Antiguedad ?A))
+            (test (< ?A 2))))
+  (not (and (Noticia (Nombre ?Nombre) (Tipo Buena) (Antiguedad ?A))
+            (test (< ?A 2))))
   =>
   (assert (Estabilidad ?Nombre Inestable))
 )
@@ -15,8 +17,10 @@
   (Modulo Modulo0)
   (Sector (Nombre Ibex) (Perd5Consec true))
   (Valor (Nombre ?Nombre) (Sector Servicios))
-  (not (Noticia (Nombre Servicios) (Tipo Buena)))
-  (not (Noticia (Nombre ?Nombre) (Tipo Buena)))
+  (not (and (Noticia (Nombre Servicios) (Tipo Buena) (Antiguedad ?A))
+            (test (< ?A 2))))
+  (not (and (Noticia (Nombre ?Nombre) (Tipo Buena) (Antiguedad ?A))
+            (test (< ?A 2))))
   =>
   (assert (Estabilidad ?Nombre Inestable))
 )
@@ -28,8 +32,10 @@
   (Modulo Modulo0)
   (Noticia (Nombre Economia) (Tipo Mala))
   (Valor (Nombre ?NombreValor) (Sector ?Sector))
-  (not (Noticia (Nombre ?Sector) (Tipo Buena)))
-  (not (Noticia (Nombre ?Nombre) (Tipo Buena)))
+  (not (and (Noticia (Nombre ?Sector) (Tipo Buena) (Antiguedad ?A))
+            (test (< ?A 2))))
+  (not (and (Noticia (Nombre ?Nombre) (Tipo Buena) (Antiguedad ?A))
+            (test (< ?A 2))))
   =>
   (assert (Estabilidad ?NombreValor Inestable))
 )
@@ -42,7 +48,8 @@
   (Modulo Modulo0)
   (Noticia (Nombre ?Sector) (Tipo Mala))
   (Valor (Nombre ?NombreValor) (Sector ?Sector))
-  (not (Noticia (Nombre ?Nombre) (Tipo Buena)))
+  (not (and (Noticia (Nombre ?Nombre) (Tipo Buena) (Antiguedad ?A))
+            (test (< ?A 2))))
   =>
   (assert (Estabilidad ?NombreValor Inestable))
 )
@@ -54,7 +61,8 @@
   (Noticia (Nombre ?Sector) (Tipo Buena))
   (Valor (Nombre ?NombreValor) (Sector ?Sector))
   ?f <- (Estabilidad ?NombreValor Inestable)
-  (not (Noticia (Nombre ?Nombre) (Tipo Mala)))
+  (not (and (Noticia (Nombre ?Nombre) (Tipo Mala) (Antiguedad ?A))
+            (test (< ?A 2))))
   =>
   (retract ?f)
 )
@@ -63,7 +71,8 @@
 ;   ha habido una noticia negativa
 (defrule InestableValor
   (Modulo Modulo0)
-  (Noticia (Nombre ?NombreValor) (Tipo Mala))
+  (Noticia (Nombre ?NombreValor) (Tipo Mala) (Antiguedad ?A))
+  (test (< ?A 2))
   (Valor (Nombre ?NombreValor))
   =>
   (assert (Estabilidad ?NombreValor Inestable))
@@ -73,7 +82,8 @@
 ;   por una noticia positiva
 (defrule EstableValor
   (Modulo Modulo0)
-  (Noticia (Nombre ?NombreValor) (Tipo Buena))
+  (Noticia (Nombre ?NombreValor) (Tipo Buena) (Antiguedad ?A))
+  (test (< ?A 2))
   (Valor (Nombre ?NombreValor))
   ?f <- (Estabilidad ?NombreValor Inestable)
   =>

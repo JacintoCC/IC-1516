@@ -1,10 +1,4 @@
-(defrule name
-  =>
-  (assert (CargarPrograma))
-)
-
 (defrule CargarPrograma
-  ?f <- (CargarPrograma)
   (not (ProgramaCargado))
   =>
   (reset)

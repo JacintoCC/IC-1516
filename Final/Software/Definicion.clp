@@ -58,8 +58,21 @@
   (field Explicacion)
   (field Empresa2
     (default NA))
+  (field Presentada
+    (default false))
+)
+
+(deftemplate Contador
+  (field Indice)
+)
+
+(deffacts DeclaracionContador
+  (Contador (Indice 0))
 )
 
 (deffacts PrecioDinero
   (PrecioDinero 0)
 )
+
+(deffunction dive (?a ?b)
+   (div (/ ?a ?b) 1))
