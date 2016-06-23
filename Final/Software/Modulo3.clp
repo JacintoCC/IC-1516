@@ -1,6 +1,10 @@
+; ------------------------------------
+; FICHERO CON LAS REGLAS DEL MÓDULO 3: REALIZACIÓN DE PROPUESTAS
+; -----------------------------------
+
 ; Regla para la venta de valores peligrosos
 (defrule VentaPeligrosos
-  (Modulo Modulo3)
+  (Modulo (Indice 3))
   (Peligroso ?Nombre ?ExplicacionPeligroso)
   (Valor (Nombre ?Nombre) (VarMes ?VarMes) (Sector ?Sector) (RPD ?RPD))
   (test (< ?VarMes 0))
@@ -24,7 +28,7 @@
 
 ; Regla para proponer la inversión en infravalorados
 (defrule InversionInfravalorados
-  (Modulo Modulo3)
+  (Modulo (Indice 3))
   (Infravalorado ?Nombre ?ExplicacionInfravalorado)
   (Valor (Nombre ?Nombre) (PER ?PER) (RPD ?RPD))
   (Sector (Nombre Ibex) (PER ?PERmedio))
@@ -46,7 +50,7 @@
 
 ; Regla para proponer la venta de valores sobrevalorados
 (defrule VentaSobrevalorados
-  (Modulo Modulo3)
+  (Modulo (Indice 3))
   (Sobrevalorado ?Nombre ?ExplicacionSobrevalorado)
   (Cartera (Nombre ?Nombre) (Valor ?Valor))
   (Valor (Nombre ?Nombre) (Precio ?Valor) (PER ?PER) (RPD ?RPD) (Sector ?Sector) (RPA ?RPA))
@@ -71,7 +75,7 @@
 
 ; Regla para proponer el cambio de un valor por otro más rentable
 (defrule CambiarInversion
-  (Modulo Modulo3)
+  (Modulo (Indice 3))
   ; Empresa 1
   (Valor (Nombre ?Nombre1) (RPD ?RPD1))
   (not (Sobrevalorado ?Nombre1 ?))
@@ -102,8 +106,7 @@
 
 (defrule SalirModulo3
   (declare (salience -1))
-  ?f <- (Modulo Modulo3)
+  ?f <- (Modulo (Indice 3))
   =>
-  (retract ?f)
-  (assert (Modulo Modulo4))
+  (modify (Indice 4))
 )

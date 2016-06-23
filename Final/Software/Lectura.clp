@@ -1,9 +1,14 @@
-; Definición del primer fichero que se va a leer
+; ------------------------------------
+; FICHERO CON LAS REGLAS Y HECHOS PARA REALIZAR
+; LA LECTURA DE LOS DATOS DE ENTRADA
+; ------------------------------------
+
+; Declaración del nombre del fichero de Análisis para su lectura
 (deffacts readAnalisis
   (ReadAnalisis "Datos/Analisis.txt")
 )
 
-; Regla con una alta prioridad para leer el fichero con el análisis
+; Apertura e inicio de la lectura del fichero Análisis
 (defrule openAnalisis
   (declare (salience 50))
   (ReadAnalisis ?NameFile)
@@ -12,7 +17,7 @@
   (assert (SeguirLeyendo))
 )
 
-; Lectura del fichero con el análisis y dotación de forma en templates
+; Lectura del fichero Análisis y dotación de forma según el template Valor
 (defrule readingAnalisis
   (declare (salience 49))
   (ReadAnalisis ?NameFile)
@@ -47,7 +52,7 @@
     (assert (SeguirLeyendo)))
 )
 
-; Cierre del fichero de análisis
+; Cierre del fichero Análisis
 (defrule closeFile
   (declare (salience 48))
   ?f <- (ReadAnalisis ?NameFile)
@@ -57,7 +62,7 @@
   (assert (ReadSectores "Datos/AnalisisSectores.txt"))
 )
 
-; Lectura del análisis de los sectores
+; Apertura e inicio de la lectura del fichero AnálisisSectores
 (defrule openSectores
   (declare (salience 47))
   (ReadSectores ?NameFile)
@@ -66,7 +71,7 @@
   (assert (SeguirLeyendo))
 )
 
-; Lectura del análisis de los sectores y dotación de forma
+; Lectura del fichero AnálisisSectores y dotación de forma según el template Sector
 (defrule readingSectores
   (declare (salience 46))
   (ReadSectores ?NameFile)
@@ -94,7 +99,7 @@
     (assert (SeguirLeyendo)))
 )
 
-; Cierre del fichero de sectores
+; Cierre del fichero AnálisisSectores
 (defrule closefileSectores
   (declare (salience 45))
   ?f <- (ReadSectores ?NameFile)
@@ -104,7 +109,7 @@
   (assert (ReadNoticias "Datos/Noticias.txt"))
 )
 
-; Lectura de Noticias
+; Apertura e inicio de la lectura del fichero Noticias
 (defrule openNoticias
   (declare (salience 44))
   (ReadNoticias ?NameFile)
@@ -113,7 +118,7 @@
   (assert (SeguirLeyendo))
 )
 
-; Lectura de las noticias y dotación de forma
+; Lectura del fichero Noticias y dotación de forma según el template Noticia
 (defrule readingNoticias
   (declare (salience 43))
   (ReadNoticias ?NameFile)
@@ -130,7 +135,7 @@
     (assert (SeguirLeyendo)))
 )
 
-; Cierre del archivo de noticias
+; Cierre del fichero Noticias
 (defrule closefileNoticias
   (declare (salience 42))
   ?f <- (ReadNoticias ?NameFile)
@@ -140,7 +145,7 @@
   (assert (ReadCartera "Datos/Cartera.txt"))
 )
 
-; Lectura de Cartera
+; Apertura e inicio de la lectura del fichero Cartera
 (defrule openCartera
   (declare (salience 41))
   (ReadCartera ?NameFile)
@@ -149,7 +154,7 @@
   (assert (SeguirLeyendo))
 )
 
-; Lectura de los valores en la cartera y dotación de forma
+; Lectura del fichero Cartera y dotación de forma según el template Cartera
 (defrule readingCartera
   (declare (salience 40))
   (ReadCartera ?NameFile)
@@ -166,7 +171,8 @@
     (assert (SeguirLeyendo)))
 )
 
-; Estimación del rendimiento por año
+; Estimación del rendimiento por año siguiendo la regla descrita
+;   en el informe.
 (defrule RPA
   ?mod <- (Valor
     (Nombre ?Nombre)
@@ -181,12 +187,12 @@
 
 )
 
-; Cierre del archivo de la cartera y entrada en el módulo 0
+; Cierre del fichero Cartera y entrada en el módulo 0
 (defrule closefileCartera
   (declare (salience 39))
   ?f <- (ReadCartera ?NameFile)
   =>
   (close mydata)
   (retract ?f)
-  (assert (Modulo Modulo0))
+  (assert (Modulo (Indice 0))
 )
