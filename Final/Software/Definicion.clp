@@ -67,6 +67,8 @@
   (field Nombre)
   (field Acciones)
   (field Valor)
+  (field Actualizado
+    (default true))
 )
 
 ; ---------------------------------
@@ -104,15 +106,28 @@
   (field Indice)
 )
 
-; Declaración de dicho contador
-(deffacts DeclaracionContador
+; ---------------------------------
+; Template para llevar la suma del valor de las acciones
+; ---------------------------------
+(deftemplate Suma
+  (field Suma)
+)
+
+; Declaración de las variables globales
+(deffacts DeclaracionVariables
   (Contador (Indice 0))
+  (Suma (Suma 0))
 )
 
 ; Declaración de la constante Precio del dinero
 ;   según el precio establecido por el BCE
 (deffacts PrecioDinero
   (PrecioDinero 0)
+)
+
+; Declaración del número de propuestas a realizar
+(deffacts NumMaxPropuestas
+  (NumMaxPropuestas 5)
 )
 
 ; Función para obtener el cociente entero de una división

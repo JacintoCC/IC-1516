@@ -180,9 +180,10 @@
     (RPD ?RPD)
     (VarAnual ?VarAnual)
     (VarSem ?VarSem)
-    (VarTri ?VarTri))
+    (VarTri ?VarTri)
+    (VarMes ?VarMes))
   =>
-  (bind ?RPA (+ (* 100 ?RPD) (max ?VarAnual ?VarSem ?VarTri)))
+  (bind ?RPA (+ (* 100 ?RPD) (max ?VarAnual ?VarSem ?VarTri ?VarMes)))
   (modify ?mod (RPA ?RPA))
 
 )
@@ -193,6 +194,6 @@
   ?f <- (ReadCartera ?NameFile)
   =>
   (close mydata)
+  (assert (Modulo (Indice 0)))
   (retract ?f)
-  (assert (Modulo (Indice 0))
 )

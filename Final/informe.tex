@@ -141,10 +141,10 @@
 \end{regla}	
 
 \begin{definicion}[Rendimiento esperado]
-	Entendemos el rendimiento esperado como la suma de la revalorización anual esperada más los dividendos anuales esperados. Nos permitirá ordenar las posibles operaciones para su recomendación.
+	Entendemos el rendimiento esperado como la suma de la revalorización anual esperada más los dividendos anuales esperados. Nos permitirá ordenar las posibles operaciones para su recomendación. 
 \end{definicion}
 
-\paragraph{Rendimiento esperado} Para las reglas dadas por el experto, calcularemos de forma distinta el rendimiento esperado, que repercutirá en el orden de selección de las medidas a proponer al usuario.
+\paragraph{Rendimiento esperado} Podemos estimar la revalorización anual esperada como el mejor valor de la variación en el último año, los últimos 6 ó 3 meses. El experto ha indicado que, debido a que en el último año la bolsa ha bajado, se propondría cambiar incluso buenos valores que tengamos, por otros cuyo RPD sea mayor que la suma del RPD del valor que disponemos más la variación anterior (negativa debido a la bajada de la bolsa). El experto, al observar que la propuesta de intercambiar es aún muy extensa, propone incluir la variación del último mes en la estimación de la revalorización anual esperada. Para las reglas dadas por el experto, calcularemos de forma distinta el rendimiento esperado según sus indicaciones, que repercutirá en el orden de selección de las medidas a proponer al usuario.
 
 \begin{regla}[Inversión en empresas infravaloradas]
 	 Si una empresa está infravalorada y el usuario tiene  dinero para invertir proponer invertir el dinero en las acciones de la empresa. Posteriormente se preguntará al usuario la cantidad a invertir y no se contemplan más reglas para decidir cuánto invertir en cada valor o sector.
@@ -165,9 +165,64 @@
 \section{Descripción del sistema desarrollado}
 
 \subsection{Variables de entrada del problema}
+
+	\paragraph{Datos del IBEX35} El fichero \texttt{Analisis.txt} contiene la información del día anterior del IBEX35. Para cada valor de la bolsa, incluye una serie de atributos que usaremos en la deducción de nuevos datos y en la realización de propuestas.
+	
+	\begin{itemize}
+		\item \textbf{Nombre} del valor
+		\item \textbf{Precio} de la acción al cierre de la sesión
+		\item \textbf{Variación} del precio de la acción con respecto al día anterior.
+		\item \textbf{Capitalización}: Valor total de la empresa
+		\item \textbf{PER}: Capitalización por beneficios anuales
+		\item \textbf{RPD}: Reparto de dividendos
+		\item \textbf{Tamaño} de la empresa
+		\item \textbf{Etiqueta PER}: Categorización del PER
+		\item \textbf{Etiqueta RPD}: Categorización del RPD
+		\item \textbf{Sector}
+		\item $\mathbf{\%}$\textbf{Variación 5 días}
+		\item \textbf{Pérdidas en 3 días consecutivos}
+		\item \textbf{Pérdidas en 5 días consecutivos}
+		\item \textbf{Variación resp. al sector} durante 5 días.
+		\item \textbf{Variación resp. al sector $<-5\%$}
+		\item \textbf{Var. mensual}
+		\item \textbf{Var. trimestral}
+		\item \textbf{Var. semestral}
+		\item \textbf{Var. anual}
+	\end{itemize}
+	
+	Se incluirá en cada valor de la bolsa el rendimiento anual esperado, siguiendo la regla descrita anteriormente.
+	
+	
+	\paragraph{Datos de los sectores} En el fichero \texttt{AnalisisSectores.txt} se encuentra la información relativa al global del IBEX35 y la media de los valores del sector.
+	
+	\begin{itemize}
+		\item \textbf{Nombre} del sector
+		\item \textbf{Variación} media de las empresas del sector.
+		\item Suma de la \textbf{capitalización} de las empresas del sector.
+		\item \textbf{PER} medio de las empresas del sector
+		\item \textbf{RPD} medio de las empresas del sector
+		\item $\mathbf{\%}$ \textbf{IBEX}
+		\item $\mathbf{\%}$\textbf{Variación 5 días} media de las empresas del sector.
+		\item \textbf{Pérdidas en 3 días consecutivos}
+		\item \textbf{Pérdidas en 5 días consecutivos}
+		\item \textbf{Var. mensual}
+		\item \textbf{Var. trimestral}
+		\item \textbf{Var. semestral}
+		\item \textbf{Var. anual}
+	\end{itemize}
+	
+	Además, declaramos en el hecho \texttt{(PrecioDinero 0)}, como constante, que podremos modificar, cuando así lo disponga el BCE en el fichero \texttt{Definicion.clp}. También se puede modificar en este fichero el número máximo de propuestas a realizar, actualmente declarado como 5.\\
+	El resto de la entrada del programa se corresponde con la interacción del usuario.
+	
 \subsection{Variables de salida del problema}
+	
+	Las variables de salida son, fundamentalmente, las propuestas que se realizan al usuario. Estas incluyen la explicación que daría el experto sobre por qué las ha presentado. Cada hecho deducido por el sistema sobre los valores en bolsa o la economía en general incluye al hecho la explicación, lo que facilita la composición de la explicación de la propuesta final. Interiormente se deducen otros valores, como son los valores inestables, valores peligrosos, sobrevalorados o infravalorados, cuya definición,  incluida en la descripción de las sesiones, ayuda a comprender los motivos por los cuales se realizan las propuestas.\\
+	En el módulo de interacción con el usuario, cuando éste va a salir del programa, tiene la posibilidad de guardar o no el fichero con la cartera de acciones que tiene en ese momento el sistema, lo cual constituye también una salida del programa. Para evaluar el sistema experto podríamos tomar la cartera final del día anterior y ver si vamos ganando dinero o no.
+	
 \subsection{Conocimiento global del sistema}
-\subsection{Especificación de los módulos desarrollados}
+
+	El conocimiento global del sistema está compuesto por los datos de entrada y las reglas deducidas por el experto, 
+	
 \subsection{Estructura de funcionamiento del esquema de razonamiento}
 \subsection{Lista de hechos usados y representación}
 \subsection{Hechos y reglas de cada módulo}

@@ -8,6 +8,7 @@
 (deffacts OpcionesMenu
   (Menu 1 "Mostrar propuesta y valorar")
   (Menu 2 "Recalcular propuestas")
+  (Menu 3 "Actualizar valor de la cartera")
   (Menu 0 "Detener programa")
   )
 
@@ -56,10 +57,10 @@
   (Modulo (Indice 4))
   ?f <- (Respuesta 0)
   =>
-  (printout t "Confirme que desea salir del programa Sí (S)/No (Cualquier otra tecla)" crlf)
+  (printout t "Confirme que desea salir del programa Si (S)/No (Cualquier otra tecla)" crlf)
   (bind ?Respuesta (read))
   (if (or (eq ?Respuesta S) (eq ?Respuesta s)) then
-    (printout t "¿Desea guardar los cambios? Sí (S)/No (Cualquier otra tecla)" crlf)
+    (printout t "¿Desea guardar los cambios? Si (S)/No (Cualquier otra tecla)" crlf)
     (bind ?Respuesta (read))
       (if (or (eq ?Respuesta S) (eq ?Respuesta s)) then
         (open "Datos/CarteraMod.txt" mydata "w")
@@ -70,7 +71,7 @@
   (retract ?f)
 )
 
-; Guardar como primera línea en el fichero el dinero disponible
+; Guardar como primera linea en el fichero el dinero disponible
 (defrule guardarDisponible
   (declare (salience 3))
   (Modulo (Indice 4))
@@ -114,16 +115,17 @@
   (Modulo (Indice 4))
   ; Se ha introducido la opción correspondiente
   ?fresp <- (Respuesta 1)
-  ; Se han realizado menos de cinco propuestas
+  ; Se han realizado menos del número máximo de propuestas
+  (NumMaxPropuestas ?n)
   ?fcont <- (Contador (Indice ?ind))
-  (test (< ?ind 5))
+  (test (< ?ind ?n))
   ; Es la mejor propuesta no presentada aún
   ?fprop <- (Propuesta (Operacion ?Op) (Empresa ?Emp) (RE ?RE1) (Explicacion ?Exp) (Empresa2 ?Emp2) (Presentada false))
   (not  (and (Propuesta (RE ?RE2) (Presentada false)) (test(> ?RE2 ?RE1))))
   =>
   (retract ?fresp)
   (printout t ?Exp crlf)
-  (printout t "¿Desea llevar a cabo esta operación? Sí (S)/ No (Cualquier otra tecla)"  crlf)
+  (printout t "¿Desea llevar a cabo esta operación? Si (S)/ No (Cualquier otra tecla)"  crlf)
   (bind ?Respuesta (read))
   (if (or (eq ?Respuesta S) (eq ?Respuesta s)) then
     (assert (Operacion ?Op ?Emp ?Emp2))
@@ -135,15 +137,16 @@
   (assert (PrintMenu))
 )
 
-; Muestra de un mensaje cuando se han realizado 5 propuestas o no hay más
+; Muestra de un mensaje cuando se han realizado el número máximo de propuestas o no hay más
 (defrule SinPropuestas
   (Modulo (Indice 4))
   ?fresp <- (Respuesta 1)
   (Contador (Indice ?ind))
+  (NumMaxPropuestas ?n)
   (or (not (Propuesta (Presentada false)))
-      (test (>= ?ind 5)))
+      (test (>= ?ind ?n)))
   =>
-  (printout t "Se han mostrado las 5 mejores propuestas existentes" crlf)
+  (printout t "Se han mostrado las " ?n " mejores propuestas existentes" crlf)
   (retract ?fresp)
   (assert (PrintMenu))
 )
@@ -176,7 +179,7 @@
   (Valor (Nombre ?Empresa) (Precio ?Precio))
   =>
   (retract ?f)
-  (printout t "Introduzca la cantidad a invertir (<= " ?Disponible ") Sí (S)/No (Cualquier otra tecla)"  crlf)
+  (printout t "Introduzca la cantidad a invertir (<= " ?Disponible ") Si (S)/No (Cualquier otra tecla)"  crlf)
   (bind ?Respuesta (read))
   (bind ?NumAcciones (dive (* 0.995 ?Respuesta) ?Precio))
   (bind ?Valor (* ?Precio ?NumAcciones))
@@ -289,4 +292,56 @@
   (retract ?fresp)
   (modify ?fcont (Indice 0))
   (modify ?fmod (Indice 1))
+)
+
+; -----------------------------------------------------------------------------
+; Actualizar el valor de la cartera
+; -----------------------------------------------------------------------------
+
+; Regla para señalar los valores a actualizar
+(defrule DisponerActualizacionValorCartera
+  (declare (salience 5))
+  (Modulo (Indice 4))
+  (Respuesta 3)
+  ?fcartera <- (Cartera (Nombre ?Nombre & ~ DISPONIBLE) (Actualizado ?act & ~false))
+  =>
+  (modify ?fcartera (Actualizado false))
+)
+
+; Quitamos la condición de entrada en este submódulo para evitar el bucle
+(defrule EvitarBucle
+  (declare (salience 4))
+  (Modulo (Indice 4))
+  ?fresp <- (Respuesta 3)
+  =>
+  (retract ?fresp)
+  (assert (ActualizandoCartera))
+)
+
+; Regla para actualizar los valores de la cartera
+(defrule ActualizarValorCartera
+  (declare (salience 3))
+  (Modulo (Indice 4))
+  (ActualizandoCartera)
+  ?fcartera <- (Cartera (Nombre ?Nombre) (Acciones ?NumAcciones) (Actualizado false))
+  (Valor (Nombre ?Nombre) (Precio ?Precio))
+  ?fsuma <- (Suma (Suma ?Suma))
+  =>
+  (bind ?ValorActual (* ?NumAcciones ?Precio))
+  (modify ?fcartera (Valor ?ValorActual) (Actualizado true))
+  (modify ?fsuma (Suma (+ ?Suma ?ValorActual)))
+)
+
+; Regla para mostrar el valor total de la cartera
+(defrule MostrarValorCartera
+  (declare (salience 2))
+  (Modulo (Indice 4))
+  ?f <- (ActualizandoCartera)
+  (Cartera (Nombre DISPONIBLE) (Valor ?ValorDisponible) (Actualizado true))
+  ?fsuma <- (Suma (Suma ?Suma))
+  =>
+  (printout t "El valor total de la cartera es " (+ ?Suma ?ValorDisponible) crlf)
+  (modify ?fsuma (Suma 0))
+  (retract ?f)
+  (assert (PrintMenu))
 )

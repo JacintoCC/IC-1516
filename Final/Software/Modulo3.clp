@@ -33,6 +33,7 @@
   (Valor (Nombre ?Nombre) (PER ?PER) (RPD ?RPD))
   (Sector (Nombre Ibex) (PER ?PERmedio))
   (Cartera (Nombre Disponible) (Valor ?Disponible))
+  (test (neq ?PER 0))
   (test (> ?Disponible 0))
   =>
   (bind ?RE (+ (/ (*  (- ?PERmedio ?PER) 20) ?PER) (* 100 ?RPD)))
@@ -57,6 +58,7 @@
   (Sector (Nombre ?Sector) (PER ?PERmedio))
   (PrecioDinero ?PrecioDinero)
   (test (< ?RPA (+ 5 ?PrecioDinero)))
+  (test (neq ?PER 0))
   =>
   (bind ?RE (- (/ (- ?PER ?PERmedio) (* 5 ?PER)) (* 100 ?RPD)))
   (assert (Propuesta
@@ -108,5 +110,5 @@
   (declare (salience -1))
   ?f <- (Modulo (Indice 3))
   =>
-  (modify (Indice 4))
+  (modify ?f (Indice 4))
 )
