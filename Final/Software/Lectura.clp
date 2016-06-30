@@ -171,23 +171,6 @@
     (assert (SeguirLeyendo)))
 )
 
-; Estimación del rendimiento por año siguiendo la regla descrita
-;   en el informe.
-(defrule RPA
-  ?mod <- (Valor
-    (Nombre ?Nombre)
-    (RPA 'NA')
-    (RPD ?RPD)
-    (VarAnual ?VarAnual)
-    (VarSem ?VarSem)
-    (VarTri ?VarTri)
-    (VarMes ?VarMes))
-  =>
-  (bind ?RPA (+ (* 100 ?RPD) (max ?VarAnual ?VarSem ?VarTri ?VarMes)))
-  (modify ?mod (RPA ?RPA))
-
-)
-
 ; Cierre del fichero Cartera y entrada en el módulo 0
 (defrule closefileCartera
   (declare (salience 39))

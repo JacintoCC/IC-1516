@@ -16,7 +16,7 @@
 (defrule Menu
   (Modulo (Indice 4))
   =>
-	(printout t "Pulse una de las siguientes teclas para acceder a las opciones del menú" crlf)
+	(printout t "Pulse una de las siguientes teclas para acceder a las opciones del menu" crlf)
   (assert (PrintMenu))
 )
 
@@ -45,7 +45,7 @@
   =>
   (retract ?f)
   (printout t "Opcion incorrecta" crlf)
-  (printout t "Pulse una de las siguientes teclas para acceder a las opciones del menú" crlf)
+  (printout t "Pulse una de las siguientes teclas para acceder a las opciones del menu" crlf)
   (assert (PrintMenu)))
 
 ; ------------------------------------------------------------------------------
@@ -66,7 +66,7 @@
         (open "Datos/CarteraMod.txt" mydata "w")
         (assert (Guardar)))
   else
-    (printout t "Pulse una de las siguientes teclas para acceder a las opciones del menú" crlf)
+    (printout t "Pulse una de las siguientes teclas para acceder a las opciones del menu" crlf)
     (assert (PrintMenu)))
   (retract ?f)
 )
@@ -133,7 +133,7 @@
   else
     (modify ?fprop (Presentada true)))
   (modify ?fcont (Indice (+ ?ind 1)))
-  (printout t "Pulse una de las siguientes teclas para acceder a las opciones del menú" crlf)
+  (printout t "Pulse una de las siguientes teclas para acceder a las opciones del menu" crlf)
   (assert (PrintMenu))
 )
 
@@ -170,22 +170,46 @@
   (assert (Descartar Venta ?Empresa))
 )
 
-; Compra de acciones
+; Compra de acciones de un valor que no tenemos en la cartera
+(defrule EfectuarInversionNuevoValor
+  (declare (salience 10))
+  (Modulo (Indice 4))
+  ?f <- (Operacion Invertir ?Empresa NA)
+  ?modDisponible <- (Cartera (Nombre DISPONIBLE) (Valor ?Disponible))
+  (Valor (Nombre ?Empresa) (Precio ?Precio))
+  (not (Cartera (Nombre ?Empresa)))
+  =>
+  (retract ?f)
+  (printout t "Introduzca la cantidad a invertir (<= " ?Disponible ") "  crlf)
+  (bind ?Respuesta (read))
+  (bind ?NumAcciones (dive ?Respuesta (* 1.005 ?Precio)))
+  (bind ?Valor (* ?Precio ?NumAcciones))
+  (if (and (<= ?Respuesta ?Disponible) (> (* 0.995 ?Respuesta) ?Precio)) then
+    (modify ?modDisponible (Valor (- ?Disponible (* 1.005 ?Valor)))
+                           (Acciones (- ?Disponible (* 1.005 ?Valor))))
+    (assert (Cartera (Nombre ?Empresa) (Valor ?Valor) (Acciones ?NumAcciones)))
+    )
+  (assert (Descartar Compra ?Empresa))
+)
+
+; Compra de acciones de un valor que ya tenemos en la cartera
 (defrule EfectuarInversion
   (declare (salience 10))
   (Modulo (Indice 4))
   ?f <- (Operacion Invertir ?Empresa NA)
   ?modDisponible <- (Cartera (Nombre DISPONIBLE) (Valor ?Disponible))
   (Valor (Nombre ?Empresa) (Precio ?Precio))
+  ?fcartera <- (Cartera (Nombre ?Empresa) (Acciones ?NumActualAcciones) (Valor ?ValorActual))
   =>
   (retract ?f)
-  (printout t "Introduzca la cantidad a invertir (<= " ?Disponible ") Si (S)/No (Cualquier otra tecla)"  crlf)
+  (printout t "Introduzca la cantidad a invertir (<= " ?Disponible ") "  crlf)
   (bind ?Respuesta (read))
-  (bind ?NumAcciones (dive (* 0.995 ?Respuesta) ?Precio))
+  (bind ?NumAcciones (dive ?Respuesta (* 1.005 ?Precio)))
   (bind ?Valor (* ?Precio ?NumAcciones))
-  (if (and (<= ?Respuesta ?Disponible) (> ?Respuesta 0)) then
-    (modify ?modDisponible (Valor (- ?Disponible ?Valor)) (Acciones (- ?Disponible ?Valor)))
-    (assert (Cartera (Nombre ?Empresa) (Valor ?Valor) (Acciones ?NumAcciones)))
+  (if (and (<= ?Respuesta ?Disponible) (> (* 0.995 ?Respuesta) ?Precio)) then
+    (modify ?modDisponible (Valor (- ?Disponible (* 1.005 ?Valor)))
+                           (Acciones (- ?Disponible (* 1.005 ?Valor))))
+    (modify ?fcartera  (Valor (+ ?ValorActual ?Valor)) (Acciones (+ ?NumActualAcciones ?NumAcciones)))
     )
   (assert (Descartar Compra ?Empresa))
 )
@@ -198,14 +222,36 @@
   ?accionesVendidas <- (Cartera (Nombre ?Empresa2) (Valor ?Valor))
   ?fdisponible <- (Cartera (Nombre DISPONIBLE) (Valor ?disponible))
   (Valor (Nombre ?Empresa1) (Precio ?Precio))
+  (not (Cartera (Nombre ?Empresa1)))
   =>
   (retract ?f)
   (retract ?accionesVendidas)
-  (bind ?NumAcciones (dive (* 0.99 ?Valor) ?Precio))
+  (bind ?NumAcciones (dive (* 0.995 ?Valor) (* 1.005 ?Precio)))
   (bind ?ValorReal (* ?NumAcciones ?Precio))
   (assert (Cartera (Nombre ?Empresa1) (Valor ?ValorReal) (Acciones ?NumAcciones)))
-  (modify ?fdisponible (Valor (+ ?disponible (- (* 0.99 ?Valor) ?ValorReal)))
-                       (Acciones (+ ?disponible (- (* 0.99 ?Valor) ?ValorReal))))
+  (modify ?fdisponible (Valor (+ ?disponible (- (* 0.995 ?Valor) (* 1.005 ?ValorReal))))
+                       (Acciones (+ ?disponible (- (* 0.995 ?Valor) (* 1.005 ?ValorReal)))))
+  (assert (Descartar Venta ?Empresa2))
+  (assert (Descartar Compra ?Empresa1))
+)
+
+; Intercambio de aciones por acciones de una empresa de la que ya tenemos
+(defrule IntercambioValores
+  (declare (salience 10))
+  (Modulo (Indice 4))
+  ?f <- (Operacion IntercambiarValores ?Empresa1 ?Empresa2)
+  ?accionesVendidas <- (Cartera (Nombre ?Empresa2) (Valor ?Valor))
+  ?fdisponible <- (Cartera (Nombre DISPONIBLE) (Valor ?disponible))
+  (Valor (Nombre ?Empresa1) (Precio ?Precio))
+  (Cartera (Nombre ?Empresa1) (Valor ?ValorActual) (Acciones ?NumActualAcciones))
+  =>
+  (retract ?f)
+  (retract ?accionesVendidas)
+  (bind ?NumAcciones (dive (* 0.995 ?Valor) (* 1.005 ?Precio)))
+  (bind ?ValorReal (* ?NumAcciones ?Precio))
+  (assert (Cartera (Nombre ?Empresa1) (Valor (+ ?ValorActual ?ValorReal)) (Acciones (+ ?NumActualAcciones ?NumAcciones))))
+  (modify ?fdisponible (Valor (+ ?disponible (- (* 0.995 ?Valor) (* 1.005 ?ValorReal))))
+                       (Acciones (+ ?disponible (- (* 0.995 ?Valor) (* 1.005 ?ValorReal)))))
   (assert (Descartar Venta ?Empresa2))
   (assert (Descartar Compra ?Empresa1))
 )
@@ -255,6 +301,19 @@
   (retract ?f)
 )
 
+; Eliminar propuestas de comprar acciones de una empresa para la que no tenemos dinero
+(defrule DescartarCompraInsuficienciaDinero
+  (declare (salience 9))
+  (Modulo (Indice 4))
+  ?f <- (Propuesta  (Operacion Invertir|IntercambiarValores)
+                    (Empresa ?Empresa))
+  (Valor (Nombre ?Empresa) (Precio ?Precio))
+  (Cartera (Nombre DISPONIBLE) (Valor ?Disponible))
+  (test (< ?Disponible ?Precio))
+  =>
+  (retract ?f)
+)
+
 ; Eliminar la regla que descarta propuestas de compras
 (defrule StopDescartarCompra
   (declare (salience 8))
@@ -300,7 +359,7 @@
 
 ; Regla para señalar los valores a actualizar
 (defrule DisponerActualizacionValorCartera
-  (declare (salience 5))
+  (declare (salience 4))
   (Modulo (Indice 4))
   (Respuesta 3)
   ?fcartera <- (Cartera (Nombre ?Nombre & ~ DISPONIBLE) (Actualizado ?act & ~false))
@@ -310,7 +369,7 @@
 
 ; Quitamos la condición de entrada en este submódulo para evitar el bucle
 (defrule EvitarBucle
-  (declare (salience 4))
+  (declare (salience 3))
   (Modulo (Indice 4))
   ?fresp <- (Respuesta 3)
   =>
@@ -320,7 +379,7 @@
 
 ; Regla para actualizar los valores de la cartera
 (defrule ActualizarValorCartera
-  (declare (salience 3))
+  (declare (salience 2))
   (Modulo (Indice 4))
   (ActualizandoCartera)
   ?fcartera <- (Cartera (Nombre ?Nombre) (Acciones ?NumAcciones) (Actualizado false))
@@ -334,7 +393,7 @@
 
 ; Regla para mostrar el valor total de la cartera
 (defrule MostrarValorCartera
-  (declare (salience 2))
+  (declare (salience 1))
   (Modulo (Indice 4))
   ?f <- (ActualizandoCartera)
   (Cartera (Nombre DISPONIBLE) (Valor ?ValorDisponible) (Actualizado true))

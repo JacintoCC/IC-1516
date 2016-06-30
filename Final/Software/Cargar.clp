@@ -4,7 +4,6 @@
 ; ------------------------------------
 
 (deffunction Cargar()
-  (clear)
   (load "Definicion.clp")
   (load "Lectura.clp")
   (load "Modulo0.clp")

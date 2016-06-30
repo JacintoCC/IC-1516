@@ -6,7 +6,101 @@
 \usepackage{listings}
 \usepackage{amsthm}
 \usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
 
+\definecolor{color0}{RGB}{147, 147, 147} %<--- I've changed this to make it more visible
+\definecolor{color1}{RGB}{186, 033, 033}
+\definecolor{color2}{RGB}{000, 128, 000}
+\definecolor{color3}{RGB}{064, 128, 128}
+\definecolor{color4}{RGB}{170, 034, 255}
+
+
+\lstdefinelanguage{clips}{
+  morekeywords = {deffunction, deftemplate, defrule, deffacts, run,
+    clear, reset, facts, agenda, nil, initial-fact, assert, retract,
+    watch, ppdefrule, unwatch, crlf},
+  sensitive        = true,
+  morecomment      = [l]{;},
+  morestring       = [b]",
+  basicstyle       = \ttfamily\small,
+  numbers          = left,
+  numberstyle      = \tiny,
+  showstringspaces = false,
+  keywordstyle=\color{blue}\bfseries,
+  stringstyle=\color{cyan}\ttfamily,
+  frame=L,
+  xleftmargin=\parindent,
+  commentstyle=\color{teal}\ttfamily,
+}
+
+% egreg's modulo macro (see http://tex.stackexchange.com/a/34449/21891)
+\def\truncdiv#1#2{((#1-(#2-1)/2)/#2)}
+\def\moduloop#1#2{(#1-\truncdiv{#1}{#2}*#2)}
+\def\modulo#1#2{\number\numexpr\moduloop{#1}{#2}\relax}
+
+
+\makeatletter
+
+% a TeX counter to keep track of the nesting level
+\newcount\netParensCount@clisp
+
+% Modify how ( and ) get typeset depending on the value of the counter
+% (Based on Ulrike Fischer's approach to modifying characters in listings;
+% see http://tex.stackexchange.com/a/231927/21891)
+\lst@CCPutMacro
+\lst@ProcessOther{`(}{{%
+  \ifnum\lst@mode=\lst@Pmode\relax%
+    \rainbow@clisp{(}%
+    \global\advance\netParensCount@clisp by \@ne%
+  \else
+    (%
+  \fi
+}}%
+\lst@ProcessOther{`)}{{%
+  \ifnum\lst@mode=\lst@Pmode\relax%
+    \global\advance\netParensCount@clisp by \m@ne%
+    \rainbow@clisp{)}%
+  \else
+    )%
+  \fi
+}}%
+\@empty\z@\@empty
+
+% Color its argument based on the value of the \netParensCount@clisp counter
+% (modulo 5)
+\newcommand\rainbow@clisp[1]{%
+  \ifcase\modulo\netParensCount@clisp 5\relax%
+    \textcolor{color0}{#1}%
+  \or
+    \textcolor{color1}{#1}%
+  \or
+    \textcolor{color2}{#1}%
+  \or
+    \textcolor{color3}{#1}%
+  \else
+    \textcolor{color4}{#1}%
+  \fi
+}
+
+% Alternatively, you could simplify the definition of \rainbow@clisp to...
+% \newcommand\rainbow@clisp[1]{%
+%   \textcolor{color\modulo\netParensCount@clisp 5}{#1}%
+% }
+% ... but this assumes that the colours have names of the form color<i>,
+% where <i> is a positive integer
+
+% reset the counter at the beginning of each listing
+% (just in case there were unmatched parentheses in a previous listing)
+\lst@AddToHook{PreInit}{%
+  \global\netParensCount@clisp 0\relax%
+}
+
+\makeatother
+
+
+\lstnewenvironment{clips-code}
+  {\lstset{language=clips}}
+  {}
 
 % Título y autor
 \title{Práctica final\\
@@ -211,7 +305,24 @@
 		\item \textbf{Var. anual}
 	\end{itemize}
 	
-	Además, declaramos en el hecho \texttt{(PrecioDinero 0)}, como constante, que podremos modificar, cuando así lo disponga el BCE en el fichero \texttt{Definicion.clp}. También se puede modificar en este fichero el número máximo de propuestas a realizar, actualmente declarado como 5.\\
+\paragraph{Noticia} Las noticias se producen sobre valores concretos de la bolsa, sectores o sobre la economía en general. Afectan a la estabilidad de los valores durante dos días.
+
+	\begin{itemize}
+		\item \textbf{Nombre} del valor o sector al que le afecta. Si el nombre es ``Economía'' afectará a todos los valores.
+		\item \textbf{Tipo} Buena/Mala
+		\item \textbf{Antigüedad}: Días desde que se produjo la noticia.
+	\end{itemize}
+
+\paragraph{Cartera} La cartera representará la información que disponemos de las acciones y el dinero que tenemos en la cartera sin invertir. 
+
+	\begin{itemize}
+		\item \textbf{Nombre} del valor. El nombre para el dinero aún no invertido es \texttt{DISPONIBLE}
+		\item \textbf{Acciones}: Número de acciones
+		\item \textbf{Valor}: Número de acciones por el precio de cada acción
+		\item \textbf{Actualizado}: Variable lógica que le añadimos a los datos de entrada para indicar si el valor de la cartera está actualizado. Esto facilitará llevar un seguimiento de la cartera con las modificaciones realizadas al hacer propuestas.
+	\end{itemize}
+
+	Además, declaramos en el hecho \texttt{(PrecioDinero 0)}, como constante, que podremos modificar, cuando así lo disponga el BCE en el fichero \texttt{Defini}-\texttt{cion.clp}. También se puede modificar en este fichero el número máximo de propuestas a realizar, actualmente declarado como 5.\\
 	El resto de la entrada del programa se corresponde con la interacción del usuario.
 	
 \subsection{Variables de salida del problema}
@@ -221,14 +332,307 @@
 	
 \subsection{Conocimiento global del sistema}
 
-	El conocimiento global del sistema está compuesto por los datos de entrada y las reglas deducidas por el experto, 
+	El conocimiento global del sistema está compuesto por los datos de entrada y las reglas deducidas de la información extraída al experto. Se declaran también inicialmente las variables \texttt{(Contador (Indice 0))} y \texttt{(Suma (Suma 0))} para almacenar la información sobre el número de propuestas realizadas y el valor total de la cartera. Es también conocimiento global del sistema la localización de los ficheros de entrada.
 	
 \subsection{Estructura de funcionamiento del esquema de razonamiento}
-\subsection{Lista de hechos usados y representación}
-\subsection{Hechos y reglas de cada módulo}
 
+\subsubsection{Hechos, reglas y funciones iniciales}
+	
+	Para facilitar la estructuración del programa en módulos, tanto a la hora de programar como para entender el funcionamiento, he dispuesto los módulos y funciones en diferentes ficheros, que se cargan de una vez con la función \texttt{Cargar}, del fichero \texttt{Cargar.clp}. En el fichero \texttt{Definicion.clp} se incluye la definición de los \texttt{template} descritos anteriormente, las variables y la función \texttt{dive} para realizar la división entera también con el tipo \texttt{double} que nos permita realizar de manera correcta los cálculos a la hora de cambiar valores de la cartera, realizar inversiones...\\
+	Es en el fichero \texttt{Lectura.clp} donde entra en juego el esquema de razonamiento. Se define el hecho inicial con el nombre del fichero donde leer el análisis que disparará la ejecución. Se abre este fichero y se lee mientras no lleguemos al final del fichero, introduciendo en cada barrido el valor de la bolsa leído. Una vez que se finaliza, se cierra el fichero y se inserta el hecho que hará que se lea el análisis de los sectores. Se repite este proceso para leer el análisis de los sectores, las noticias y la cartera. Una vez se ha finalizado de leer la cartera, se entra en el módulo 0.\\
+	
+	El objetivo de esta parte del programa es únicamente establecer los valores iniciales y cargar en el programa los datos de entrada. No se ha deducido conocimiento más allá del incluido en los datos de entrada y que, una vez realizada las tareas preliminares, se está en el módulo 0.
+
+	
+\subsubsection{Módulo 0}
+	
+	En el módulo 0 se deduce conocimiento basándonos únicamente en las variables de entrada. En concreto, deducimos el valor RPA (Rendimiento esperado por año) siguiendo la regla dada por el experto. También deducimos los valores estables o inestables según las noticias y las peculiaridades de los valores del sector de la construcción y el sector servicios. La estrategia seguida ha sido marcar como inestable los valores cuando hay una noticia mala sobre su valor. No se ha introducido ningún tipo de prioridad para las reglas, por lo que hay que pensar si el funcionamiento es el esperado. Lo hacemos en orden descendente según la prevalencia de las reglas:
+	
+	\begin{description}
+	\item[Noticias sobre valores] Las noticias malas sobre valores conllevan la declaración del valor como inestable. Las noticias buenas, eliminan el hecho de que un valor sea inestable. Por tanto, el hecho de que haya una noticia positiva sobre un valor tiene prioridad sobre cualquier regla que arroje el hecho de que un valor es inestable, y lo elimina.
+	
+	\item[Noticias sobre sectores] Las noticias malas sobre sectores conllevan la declaración de los valores de ese sector como inestables. Si esto se diese pero hubiera una noticia positiva sobre el valor concreto, se eliminaría este hecho, como se ha descrito anterioremente. Si hay una noticia positiva sobre un sector, tendríamos que eliminar el hecho de que cada valor del sector es inestable, salvo en el caso de que hubiera una noticia negativa sobre dicho valor en concreto, pues esto debería prevalecer. La otra forma de realizarlo sería declarando una prioridad mayor a las capas que menos influyen, primero a los valores por defecto, después a las noticias sobre la economía, las noticias sobre los sectores y por último las noticias sobre los valores para que permanezcan; sin embargo, de esta manera la estabilidad se decide por las reglas realizadas y no por el orden en el que se ejecutan.
+	
+	\item[Noticias sobre la economía] Por el conocimiento transmitido por el experto, la economía sólo puede afectar negativamente a los valores de la bolsa, luego consideramos únicamente esta situación en la que para cada valor de la bolsa, lo declaramos inestable. Las noticias positivas sobre sectores o valores descartarían este hecho.
+	
+	\item[Valores por defecto] De igual manera que las noticias sobre la economía en general, el valor por defecto de inestable para un valor o sector se ve modificado si hay una noticia positiva que afecte al sector o al valor.	
+	\end{description}
+	
+	Una vez se hayan deducido los valores inestables, el contador con el número del módulo activo se actualiza a 1.
+	
+\subsubsection{Módulo 1}
+
+	El objetivo de este módulo es la detección de los valores peligrosos. Necesita el conocimiento resultante del módulo 0 y el conocimiento que aporta al sistema son los hechos que indican qué valores son peligrosos. Se añade también una explicación sobre qué regla se ha activado para informar posteriormente al usuario del motivo de la propuesta realizada.\\
+	
+	Como todos los módulos, al finalizar el módulo actualiza el contador con el módulo activo y pasa al módulo 2.
+	
+	
+\subsubsection{Módulo 2}
+
+	El módulo 2 se encarga de la detección de valores sobrevalorados e infravalorados. Utiliza los hechos deducidos en los módulos anteriores y los datos de entrada de los valores. El conocimiento que aporta al sistema consiste en indicar qué valores están infravalorados y sobrevalorados, incluyendo la causa para mostrarle al usuario la explicación correspondiente.
+	
+\subsection{Módulo 3}
+
+	Este módulo es el de mayor importancia en el programa, ya que se encarga de la realización de propuestas basándonos en la información proporcionada por el experto y por tanto tendrá una mayor influencia en las operaciones que realizará el usuario. \\
+	El conocimiento que utiliza es el de los módulos anteriores. El conocimiento añadido al sistema consiste en la operación propuesta, el rendimiento esperado para dicha operación, las empresas involucradas en la operación y la explicación que se le mostrará al usuario. 
+	
+\subsection{Módulo 4}
+
+	El módulo 4 tiene como objetivo la comunicación con el usuario. La funcionalidad de este módulo consiste en mostrar la mejor propuesta y decidir si se aplica o no, recalcular las propuestas a partir del estado de la cartera, actualizar los valores de las acciones que tenemos en la cartera según los datos de la bolsa, mostrando además el valor total de la cartera, y detener el programa, pudiendo guardar la cartera actual. Para ello usaremos los ejercicios de \texttt{CLIPS} que se pidieron con el menú, selección del máximo valor, eliminación del máximo, incremento de un contador...\\
+	El conocimiento que requiere este módulo es todo el descrito anteriormente, además de la entrada introducida por el usuario. El conocimiento que aporta es la actualización de la cartera tanto por recalcular el valor total de las acciones según el precio del análisis de la bolsa (así podríamos ver la evolución de la cartera que sigue al realizar las operaciones propuestas sin descargar de nuevo el fichero \texttt{Cartera.txt}) como por los cambios introducidos por el usuario.
+	
+	
+\subsection{Lista de hechos usados y representación}
+
+\subsubsection{Hechos iniciales}
+
+	Los hechos iniciales ya han sido descritos, se declara la constante del precio del dinero, el número máximo de propuestas, el contador con el número de propuestas realizadas y el hecho que iremos actualizando con el valor total de la cartera.
+	
+\begin{clips-code}
+; ---------------------------------
+; Template para llevar la suma del valor de las acciones
+; ---------------------------------
+(deftemplate Suma
+  (field Suma)
+)
+
+; Declaracion de las variables globales
+(deffacts DeclaracionVariables
+  (Contador (Indice 0))
+  (Suma (Suma 0))
+)
+
+; Declaracion de la constante Precio del dinero
+;   segun el precio establecido por el BCE
+(deffacts PrecioDinero
+  (PrecioDinero 0)
+)
+
+; Declaracion del numero de propuestas a realizar
+(deffacts NumMaxPropuestas
+  (NumMaxPropuestas 5)
+)
+\end{clips-code}
+
+Comenzaremos la lectura de los ficheros de entrada por el análisis: 
+
+\begin{clips-code}
+; Declaracion del nombre del fichero de Analisis para su lectura
+(deffacts readAnalisis
+  (ReadAnalisis "Datos/Analisis.txt")
+)
+\end{clips-code}
+
+El hecho que nos indicará que debemos seguir leyendo el archivo abierto es \texttt{(SeguirLeyendo)}. Para los demás archivos a leer, iremos afirmando o quitando los hechos
+
+\begin{clips-code}
+(ReadSectores "Datos/AnalisisSectores.txt")
+(ReadNoticias "Datos/Noticias.txt")
+(ReadCartera "Datos/Cartera.txt")
+\end{clips-code}
+
+Una vez que hayamos leído la cartera, se entra en el módulo 0 introduciendo el hecho \texttt{(Modulo (Indice 0))}.
+
+\subsubsection{Módulo 0}
+
+En el módulo 0 indicamos la estabilidad de los valores con hechos del tipo \texttt{(Inestable Nombre-valor Explicación)}. El resto  de hechos que usaremos será la existencia de noticias (buenas o malas), los valores de la bolsa y que la antigüedad sea menor o igual a dos días. 
+
+\subsubsection{Módulo 1}
+
+En el módulo 1 se indican los valores peligrosos con hechos del tipo \texttt{(Peligroso Nombre-valor Explicación)}. Las reglas incluirán como condición el hecho \texttt{(Modulo (Indice 1))}.
+
+\subsubsection{Módulo 2}
+
+En el módulo 2 la estructura de los hechos utilizados es la misma que en los módulos previos, se indica si un valor está sobrevalorado o infravalorado con \texttt{(Infravalorado/Sobrevalorado Nombre-valor Explicación)}
+
+\subsubsection{Módulo 3}
+
+Los hechos relevantes en el módulo 3 son las propuestas. Su estructura es la siguiente
+
+\begin{clips-code}
+
+; ---------------------------------
+; Template para una propuesta que realizaremos al usuario
+; ---------------------------------
+(deftemplate Propuesta
+  ; Tipo de operacion
+  (field Operacion)
+  ; Empresa implicada
+  (field Empresa)
+  ; Rendimiento esperado
+  (field RE)
+  ; Motivo por el que se realiza la propuesta
+  (field Explicacion)
+  ; Segunda empresa implicada
+  (field Empresa2
+    (default NA))
+  ; Valor logico que indica si la propuesta ya ha sido presentada
+  (field Presentada
+    (default false))
+)
+\end{clips-code}
+
+	Las reglas se disparan únicamente si está activo el hecho \texttt{(Modulo (Indice 3))}
+	
+\subsubsection{Módulo 4}
+
+En este módulo necesitamos más hechos para su funcionamiento. Comenzamos con las opciones para el menú, método que permite añadir fácilmente más funcionalidad independiente a la que ya tenemos. 
+
+\begin{clips-code}
+;----------------------------------------------------------------
+; Opciones generales del menu
+; ---------------------------------------------------------------
+(deffacts OpcionesMenu
+  (Menu 1 "Mostrar propuesta y valorar")
+  (Menu 2 "Recalcular propuestas")
+  (Menu 3 "Actualizar valor de la cartera")
+  (Menu 0 "Detener programa")
+  )
+\end{clips-code}
+
+El hecho que introducimos al entrar en el módulo 4 es \texttt{(PrintMenu)}, que hará que se muestren las opciones y el usuario decida una de ellas. Si la opción introducida es una de las mencionadas, se incluirá el hecho \texttt{(Respuesta X)}, que hará que se dispare la regla correspondiente a esta opción. Si no es una de las mencionadas, se volverá a introducid \texttt{(PrintMenu)}. Si se indica que queremos salir y guardar el fichero con el estado de la cartera, se introduce el hecho \texttt{(Guardar)}, que hará que vayamos escribiendo en el fichero \texttt{Datos/CarteraMod.txt} la cartera (podríamos cambiar en la regla \texttt{Salir} el fichero donde guardarlo, está así para no sobreescribir el fichero \texttt{Cartera.txt}). Una vez se ha guardado la cartera o se ha indicado que no se pretende guardar, no se afirma nada y por tanto se detiene la ejecución. \\
+
+Para mostrar el mejor resultado (con el hecho \texttt{(Respuesta 1)}), comprobamos que el contador lleve menos de \texttt{(NumMaxPropuestas 5)} propuestas y seleccionamos aquella no presentada con mayor rendimiento. Se le pregunta al usuario si desea llevar a cabo la operación propuesta. Si la respuesta es afirmativa, se introduce un hecho \texttt{(Operacion Tipo-Operación Empresa1 Empresa2)}. Cuando se introducen estos hechos debemos actualizar la cartera y las propuestas realizadas. Para ello, quitamos los hechos de la cartera si vendemos acciones y añadimos si las compramos. En el primer caso, puesto que hemos comprado acciones (o realizado un intercambio), descartaremos las propuestas que se traten de comprar más acciones de esta empresa. Si lo que hemos hecho ha sido vender acciones o intercambiar acciones de esta empresa que tenemos en la cartera por otra más rentable, descartamos aquellas propuestas de venta de estas acciones que ya no disponemos. El hecho usado será \texttt{(Descartar Compra/Venta Nombre-valor)}\\
+
+Para recalcular propuestas según el estado de la cartera, tenemos el hecho \texttt{(Respuesta 2)}, por el que en primer lugar eliminamos las propuestas existentes y posteriormente volvemos al módulo 1.\\
+
+La última funcionalidad consiste en la actualización de la cartera. Se dispara con el hecho \texttt{(Respuesta 3)} y se modifica cada valor de la cartera, poniendo el campo \texttt{(Atributo)} a \texttt{false}. Para, una vez que hayamos realmente actualizado el valor de las acciones que tenemos no se vuelva a disparar la regla, eliminamos el hecho de la respuesta e introducimos el hecho \texttt{(ActualizandoCartera)}, que dispara la regla que actualiza cada valor y va acumulando el valor total de la cartera. Una vez que no quedan valores por actualizar, se elimina el hecho \texttt{(ActualizandoCartera)} y se muestra la suma total.\\
+
+Cada vez que realizamos una acción que no sea la salida del programa, se muestra el menú del programa para que seleccionemos la acción a ejecutar.
+
+\subsection{Reglas de cada módulo}
+
+	Como ya los hechos han sido ampliamente descritos, se describen las reglas concretas de cada módulo.
+	
+\subsubsection{Lectura}
+
+\paragraph{openAnalisis} Es la primera regla que se dispara, para lo que tiene una prioridad de 50. Con el hecho que indica que hay que leer el análisis y el nombre del fichero, abre el fichero y afirma el hecho \texttt{(SeguirLeyendo)} descrito anteriormente.
+
+\paragraph{readingAnalisis} Con una prioridad de 49 y mientras se indique que el fichero a leer es el del análisis y esté activo el hecho \texttt{(SeguirLeyendo)}, realizamos el proceso de leer. Si recibimos algo distinto del fin del fichero, procedemos a leer cada atributo del valor de la bolsa, lo introducimos en la lista de hechos y volvemos a introducir el hecho \texttt{(SeguirLeyendo)}. 
+
+\paragraph{closeFile} Cuando hemos terminado de leer este fichero, con prioridad 48, cerramos el \textit{stream} \texttt{mydata}, eliminamos el hecho que indica que debemos leer el fichero de análisis e introducimos el hecho que indica que leeremos el fichero con el análisis de los sectores. 
+
+Análogas a estas están las reglas \texttt{openSectores, readingSectores, closefileSectores,openNoticias, readingNoticias, closefileNoticias, openCartera, readingCartera} y  \texttt{closeFileCartera} el cuál da paso al módulo 0. La prioridad va bajando con respecto al orden en el que se deben ejecutar las reglas. 
+
+\subsubsection{Módulo 0}
+
+Todas las reglas de este módulo incluyen en el antecedente el hecho de que el módulo activo sea el 0.
+
+\paragraph{RPA} Para simplificar las reglas de los demás módulos (principalmente del módulo 3), se calcula el rendimiento esperado por año. Para cada valor que tenga el RPA como NA, se suma el RPD$\%$ al máximo de la variación anual, semestral, trimestral y mensual y se modifica el valor con el RPA correcto.
+
+\paragraph{DefectoConstrucción} Para cada valor de la construcción, se introduce el hecho de que el valor sea inestable si no hay una noticia que lo vuelva inestable, con la explicación de que pertenece al sector de la construcción.
+
+\paragraph{DefectoServicios} Para cada valor del sector servicios, si el IBEX lleva 5 días consecutivos cayendo y no hay una noticia que lo vuelva inestable, se introduce el hecho de que el valor es inestable y la explicación de que pertenece al sector servicios y la economía está bajando.
+
+\paragraph{InestableEconomía} Si hay una noticia negativa sobre la economía, para cada valor se introduce el hecho de que el valor es inestable si no hay una noticia mala más específica y el hecho de que hay una noticia mala sobre la economía como explicación.
+
+\paragraph{InestableSector} Si hay una noticia mala sobre un sector, un valor es de ese sector y no hay una noticia mala concreta sobre ese valor, se introduce el hecho de que ese valor es inestable junto con la explicación que indica el sector del que ha habido tal noticia.
+
+\paragraph{EstableSector} Si hay una noticia buena sobre un sector y hay un valor que es inestable y no hay también una noticia pero negativa sobre el valor en concreto, quitaremos el hecho de que el valor sea inestable. 
+
+\paragraph{InestableValor} Si hay una noticia negativa sobre un valor, se afirmará el hecho de que el valor es inestable con la explicación correspondiente.
+
+\paragraph{EstableValor} Si hay una noticia positiva sobre un valor marcado como inestable, se eliminará este hecho.
+
+Para todos los casos, se comprueba que la antigüedad de la noticia sea menor o igual a dos días. 
+
+\paragraph{SalirMódulo0} Con prioridad -1, se sale del módulo 0 y se entra en el módulo 1.
+
+\subsubsection{Módulo 1} 
+
+\paragraph{DetecciónPeligrosoInestable} Para los valores inestables que lleven tres días consecutivos de pérdidas se afirma que ese valor es peligroso y por qué, explicando también por qué es inestable.
+
+\paragraph{DetecciónPeligroso} Para los valores no inestables, se afirma que es peligroso si lleva 5 días consecutivos de pérdidas, incluyendo este motivo.
+
+\paragraph{SalirMódulo1} Con prioridad -1, se sale del módulo 1 y se entra en el módulo 2.
+
+
+\subsubsection{Módulo 2}
+
+\paragraph{DetecciónSobrevaloradosGeneral} Para los valores con PER alto y RPD bajo se indica que está sobrevalorado y por qué. 
+
+\paragraph{DetecciónSobrevaloradosPeq1} Para los valores pequeños con PER alto se indica que el valor está sobrevalorado por este motivo. Como estas dos reglas se pueden dar simultáneamente, incluimos que se lancen sólo si el valor no ha sido marcado ya como sobrevalorado, ya que el funcionamiento posterior es el mismo y sólo varía la explicación, siendo ciertos ambos motivos. 
+
+\paragraph{DetecciónSobrevaloradosPeq2} Si un valor pequeño tiene PER mediano y RPD bajo, se indica que el valor está sobrevalorado por esta causa.
+
+\paragraph{DetecciónSobrevaloradosGrande1} Si un valor grande tiene PER mediano y RPD bajo, indicamos que el valor está sobrevalorado.
+
+\paragraph{DetecciónSobrevaloradosGrande2} Si un valor grande tiene RPD mediano y PER alto, introducimos el hecho de que esté sobrevalorado por este motivo.
+
+\paragraph{DetecciónInfravalorados1} Si un valor tiene el PER bajo y el RPD alto, indicaremos que este valor está infravalorado por esta causa. 
+
+\paragraph{DetecciónInfravalorados2} Si un valor tiene el PER bajo, ha bajado en el último trimestre, semestre o año más de un 30$\%$ y ha subido menos de un $10\%$ en el último mes, la empresa está infravalorada y así lo indicamos, añadiendo esta causa. Al igual que con los sobrevalorados, estas dos reglas son compatibles, así que lanzamos únicamente una.
+
+\paragraph{DetecciónInfravalorados3} Si una empresa grande tiene un RPD alto, un PER mediano, ha crecido en los últimos 5 días y se comporta en estos cinco días mejor que su sector, añadimos un hecho indicando que la empresa está infravalorada.
+
+\paragraph{SalirMódulo2} Con prioridad -1, se sale del módulo 2 y se entra en el módulo 3.
+
+\subsubsection{Módulo3} 
+
+\paragraph{VentaPeligrosos} Si una empresa de la cartera es considerada peligrosa, ha caído en el último mes y la diferencia con respecto a su sector es menor que un $-3\%$, realizamos la propuesta de vender las acciones de la empresa incluyendo la explicación dada y con el rendimiento esperado de $20 - RPD\%$.
+
+\paragraph{InversiónInfravalorados} Si una empresa está infravalorada, tenemos dinero disponible en la cartera y su PER no es 0 (para poder calcular el rendimiento esperado), proponemos invertir en esta empresa. El RE es $ 20 \frac{PER_{medio} - PER}{PER} + RPD\%$.
+
+\paragraph{VentaSobrevalorados} Si tenemos acciones de una empresa sobrevalorada cuyo RPA sea menor que un $5\% + $ \textit{Precio del dinero}, y PER distinto de 0, propondremos vender las acciones de la empresa. Su RE es  $ 20 \frac{PER - PER_{medio}}{PER} - RPD\%$. 
+
+\paragraph{CambiarInversión} Si tenemos una empresa en la cartera que no está infravalorada y hay una empresa no sobrevalorada cuyo RPD$\%$ es mayor que el RPA de nuestra empresa +1, propondremos cambiar la inversión. Se le resta a lo invertido en la otra empresa el $1\%$ de comisión. El RE es $1+RPA_2-RPD_1\%$.
+
+\paragraph{SalirMódulo3} Con prioridad -1, se sale del módulo 3 y se entra en el módulo 4
+
+\subsubsection{Módulo 4}
+
+\paragraph{Menú} Es la regla que se dispara cuando se entra en el módulo 4. Introduce el hecho para sacar el menú por pantalla. 
+
+\paragraph{PrintOption} Con prioridad 1, cuando está la regla de imprimir el menú, para cada opción del menú sale por pantalla.
+
+\paragraph{ReadAnswer} Cuando ya se han imprimido todas las opciones, se recoge la respuesta. 
+
+\paragraph{NoOption} Si la respuesta recogida no está en el menú, se muestra un mensaje diciendo que la opción es incorrecta y se indica el hecho para sacar por pantalla el menú de nuevo.
+
+\paragraph{Salir} Si la respuesta es 0 se pide confirmación para salir del programa, si la respuesta es \texttt{S} o \texttt{s}, pregunta si se quiere guardar el estado de la cartera. En caso de que la respuesta sea afirmativa, se abre el fichero \texttt{Datos/CarteraMod.txt} y se introduce el hecho \texttt{(Guardar)}, si no, simplemente se detiene la ejecución. Si la respuesta a la salida es negativa, se vuelve al menú.
+
+\paragraph{guardarDisponible} Con prioridad 3, si se ha indicado que se desea guardar la cartera, se toma el valor del dinero disponible y se escribe en el fichero (así nos aseguramos que el fichero con la cartera mantenga el formato).
+
+\paragraph{guardarCartera} Con prioridad 2, si se ha indicado que se pretende guardar la cartera, para cada valor de la cartera distinto del dinero disponible, se escribe en el fichero.
+
+\paragraph{cerrarCarteraSalir} Una vez que se han escrito todos los valores de la cartera, se cierra el fichero y se elimina el hecho \texttt{(Guardar)}.
+
+\paragraph{MostrarMejorResultado} Si la respuesta ha sido la opción 1 se comprueba que el contador con el número de propuestas realizadas sea menor que el número máximo establecido, se toma la propuesta no presentada con mayor RE, es decir, aquella propuesta no presentada tal que no haya otra con un RE mayor. Entonces se elimina el hecho con la respuesta del menú; se pide confirmación para realizar la operación;  si la respuesta es positiva, se elimina la propuesta y se indica que debe realizarse la operación; si es negativa, se indica que la propuesta ya ha sido presentada. En cualquier caso, se aumenta en 1 el contador de propuestas realizadas y se vuelve al menú.
+
+\paragraph{SinPropuestas} Si la respuesta en el menú es 1 pero no hay propuestas o el número de propuestas realizadas es mayor o igual al número máximo de propuestas, se muestra un mensaje por pantalla y se vuelve al menú. 
+
+\paragraph{VentaAcciones} Si hay una operación de venta de acciones de una empresa que tenemos en cartera, actualizamos el dinero disponible en la cartera, quitamos el valor de la cartera e introducimos el hecho que nos permita descartar la venta de las acciones que ya hemos vendido.
+
+\paragraph{EfectuarInversión} Si hay una operación de inversión en una empresa, se le pide al usuario que introduzca el dinero que pretende invertir en la empresa. Se calcula el número de acciones que se puede comprar con ese dinero (teniendo en cuenta la comisión) y se añade el valor de la bolsa a la cartera. Se resta del dinero disponible lo que finalmente se gasta en las acciones. Se descartan también las propuestas que significan la compra de acciones de esta empresa para así tratar de diversificar la cartera.
+
+\paragraph{IntercambioValores} Si hay una operación de intercambio entre dos valores, se eliminan de la cartera las acciones que vendemos, calculamos el número de acciones a comprar teniendo en cuenta las dos comisiones que debemos pagar ahora. Sumamos al dinero disponible en la cartera si hubiera algún pico (sólo compramos un número entero de acciones). Descartamos la venta de las acciones que ya no poseemos y la compra de más acciones de la empresa de la que hemos adquirido.
+
+\paragraph{DescartarVentaTrasOperación} Para toda empresa que se haya indicado que debemos descartar su venta, eliminamos las propuestas de ventas.
+
+\paragraph{DescartarIntercambioTrasOperación} Para toda empresa que se haya indicado que debemos descartar su venta, eliminamos las propuestas de intercambio de las acciones que poseíamos de dicha empresa.
+
+\paragraph{StopDescartarVenta} Si no hay propuestas de ventas o intercambios de una empresa sobre la que hemos indicado que debemos descartar los hechos, se elimina el hecho de descartar ventas de la empresa. Posteriormente se accede al menú.
+
+\paragraph{DescartarCompraTrasOperación} Si hemos descartado la compra de acciones de una empresa, eliminamos los hechos que signifiquen la inversión o el intercambio de acciones de esta empresa por una que poseamos.
+
+\paragraph{StopDescartarCompra} Si hemos introducido el hecho de descartar la compra de una empresa y ya no hay propuestas de inversión o intercambio de acciones de esa empresa, se elimina el hecho de descartar estas operaciones sobre la empresa. Se accede al menú.
+
+\paragraph{RecalcularEliminarPropuestas} Si la respuesta en el menú es 2, se elimina cada propuesta existente. 
+
+\paragraph{Recalcular} Si no quedan propuestas por eliminar, se pone el contador de las propuestas realizadas a 0 y se pasa al módulo 1 para recalcular propuestas.
+
+\paragraph{DisponerActualizaciónValorCartera} Con prioridad 4, si la respuesta en el menú es 3, para cada valor de la cartera que no esté actualizado se marca el campo \texttt{(Actualizado)} a \texttt{false}.
+
+\paragraph{EvitarBucle} Con prioridad 3, se elimina el hecho de \texttt{(Respuesta 3)} y se introduce el hecho \texttt{(ActualizandoCartera)}. Así evitamos volver a actualizar un valor ya actualizado.
+
+\paragraph{ActualizarValorCartera} Con prioridad 2, si estamos actualizando la cartera y hay un valor sin actualizar, se toma el precio de la acción del análisis y el número de acciones en la cartera, actualizando el valor en la cartera. Se suma al hecho \texttt{(Suma)} para mostrar el valor total de la cartera.
+
+\paragraph{MostrarValorCartera} Con prioridad 1 (ya se han actualizado todos los valores) se muestra la suma del valor total de la cartera y se vuelve al menú.
 
 \section{Manual de uso}
 
+Como se ha comentado, se ha distribuido el código en varios ficheros, facilitando la localización de los hechos y reglas, pudiendo cambiarlos por separado. Para cargar todos los módulos del programa está el fichero \texttt{Cargar.clp}, que contiene la definición de la función \texttt{(Cargar)}, que carga todos los módulos (las definiciones de las reglas, \texttt{templates} y declaración de hechos), \textit{resetea} los hechos y corre el programa. Si queremos no cargar algún módulo o no hacer que la ejecución sea automática, podemos comentar la línea correspondiente o hacerlo manualmente, cargando en primer lugar el fichero \texttt{Definicion.clp} y después los módulos deseados.\\
+
+Si ejecutamos la función \texttt{(Cargar)}, ya sólo tendremos que seguir s inslatrucciones del programa, indicando la opción a tomar deseada, teniendo en cuenta que para la confirmación en la toma de acciones, si queremos realizarla escribiremos \texttt{s} o \texttt{S}, y si no, cualquier otra tecla. Si estamos en el menú general y la opción introducida no se corresponde con ninguna de las existentes, el menú volverá a pedir una opción válida. Como se ha comentado, la entrada de la cartera es el fichero \texttt{Cartera.txt} y donde se guarda la cartera existente en ese momento cargada en el programa se guarda en el fichero \texttt{Datos/CarteraMod.txt}.
 
 \end{document}

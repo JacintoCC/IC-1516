@@ -6,6 +6,7 @@
 (defrule VentaPeligrosos
   (Modulo (Indice 3))
   (Peligroso ?Nombre ?ExplicacionPeligroso)
+  (Cartera (Nombre ?Nombre))
   (Valor (Nombre ?Nombre) (VarMes ?VarMes) (Sector ?Sector) (RPD ?RPD))
   (test (< ?VarMes 0))
   (Sector (Nombre ?Sector) (VarMes ?varSectorMes))
@@ -30,18 +31,20 @@
 (defrule InversionInfravalorados
   (Modulo (Indice 3))
   (Infravalorado ?Nombre ?ExplicacionInfravalorado)
-  (Valor (Nombre ?Nombre) (PER ?PER) (RPD ?RPD))
+  (Valor (Nombre ?Nombre) (Precio ?Precio) (PER ?PER) (RPD ?RPD))
   (Sector (Nombre Ibex) (PER ?PERmedio))
-  (Cartera (Nombre Disponible) (Valor ?Disponible))
+  (Cartera (Nombre DISPONIBLE) (Valor ?Disponible))
   (test (neq ?PER 0))
-  (test (> ?Disponible 0))
+  (test (> (* 0.995 ?Disponible) ?Precio))
   =>
   (bind ?RE (+ (/ (*  (- ?PERmedio ?PER) 20) ?PER) (* 100 ?RPD)))
   (assert (Propuesta
       (Operacion Invertir)
       (Empresa  ?Nombre)
       (RE ?RE)
-      (Explicacion (str-cat "Esta empresa está infravalorada y seguramente el PER tienda al PER medio en 5 años, con lo que se debería revalorizar un  "
+      (Explicacion (str-cat "Esta empresa"
+                            ?Nombre
+                            "está infravalorada y seguramente el PER tienda al PER medio en 5 años, con lo que se debería revalorizar un  "
                             ?RE
                             "% anual a lo que habría que sumar el "
                             (* 100 ?RPD)
@@ -60,7 +63,7 @@
   (test (< ?RPA (+ 5 ?PrecioDinero)))
   (test (neq ?PER 0))
   =>
-  (bind ?RE (- (/ (- ?PER ?PERmedio) (* 5 ?PER)) (* 100 ?RPD)))
+  (bind ?RE (- (/ (*  (- ?PER ?PERmedio) 20) ?PER) (* 100 ?RPD)))
   (assert (Propuesta
     (Operacion Vender)
     (Empresa ?Nombre)

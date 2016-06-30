@@ -7,9 +7,11 @@
   (Modulo (Indice 1))
   (Cartera (Nombre ?Nombre))
   (Valor (Nombre ?Nombre) (Perd3Consec true))
-  (Estabilidad ?Nombre Inestable)
+  (Inestable ?Nombre ?Explicacion)
   =>
-  (assert (Peligroso ?Nombre "es inestable y ha tenido pérdidas durante tres días"))
+  (assert (Peligroso ?Nombre (str-cat "es inestable porque "
+                                      ?Explicacion
+                                      " y ha tenido pérdidas durante tres días")))
 )
 
 ; Regla para detectar valores peligrosos
@@ -17,7 +19,7 @@
   (Modulo (Indice 1))
   (Cartera (Nombre ?Nombre))
   (Valor (Nombre ?Nombre) (Perd5Consec true))
-  (not (Peligroso ?Nombre ?))
+  (not (Inestable ?Nombre ?))
   =>
   (assert (Peligroso ?Nombre "ha tenido pérdidas durante cinco días"))
 )
@@ -35,6 +37,7 @@
 (defrule DeteccionSobrevaloradosGeneral
   (Modulo (Indice 2))
   (Valor (Nombre ?Nombre) (EtiqPER Alto) (EtiqRPD Bajo))
+  (not (Sobrevalorado ?Nombre ?))
   =>
   (assert (Sobrevalorado ?Nombre " tiene un PER alto y un RPD bajo"))
 )
@@ -43,6 +46,7 @@
 (defrule DeteccionSobrevaloradosPeq1
   (Modulo (Indice 2))
   (Valor (Nombre ?Nombre) (EtiqPER Alto) (Tamano PEQUENIA))
+  (not (Sobrevalorado ?Nombre ?))
   =>
   (assert (Sobrevalorado ?Nombre " tiene un PER alto siendo pequeña"))
 )
@@ -75,6 +79,7 @@
 (defrule DeteccionInfravalorados1
   (Modulo (Indice 2))
   (Valor (Nombre ?Nombre) (EtiqPER Bajo) (EtiqRPD Alto))
+  (not (Infravalorado ?Nombre ?))
   =>
   (assert (Infravalorado ?Nombre " tiene un PER bajo y un RPD Alto"))
 )
@@ -84,9 +89,11 @@
   (Modulo (Indice 2))
   (Valor  (Nombre ?Nombre) (EtiqPER Bajo) (VarMes ?vmes) (VarTri ?vtri)
           (VarSem ?vsem) (VarAnual ?vanual))
+  (not (Infravalorado ?Nombre ?))
+  ; Ha bajado más de un 30% en el último año, semestre o trimestre
   (test (or (< ?vtri -30) (< ?vsem -30) (< ?vanual -30)))
-  (test (> ?vmes 0))
-  (test (< ?vmes 10))
+  ; Está creciendo actualmente, pero no mucho
+  (test (and (> ?vmes 0) (< ?vmes 10)))
   =>
   (assert (Infravalorado ?Nombre " la empresa ha caído en los últimos meses y ahora está subiendo y el PER es bajo"))
 )
