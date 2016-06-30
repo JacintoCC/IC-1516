@@ -215,7 +215,7 @@
 )
 
 ; Intercambio de valores
-(defrule IntercambioValores
+(defrule IntercambioValoresNuevoValor
   (declare (salience 10))
   (Modulo (Indice 4))
   ?f <- (Operacion IntercambiarValores ?Empresa1 ?Empresa2)
@@ -305,11 +305,11 @@
 (defrule DescartarCompraInsuficienciaDinero
   (declare (salience 9))
   (Modulo (Indice 4))
-  ?f <- (Propuesta  (Operacion Invertir|IntercambiarValores)
+  ?f <- (Propuesta  (Operacion Invertir)
                     (Empresa ?Empresa))
   (Valor (Nombre ?Empresa) (Precio ?Precio))
   (Cartera (Nombre DISPONIBLE) (Valor ?Disponible))
-  (test (< ?Disponible ?Precio))
+  (test (< ?Disponible (* 1.005 ?Precio)))
   =>
   (retract ?f)
 )
@@ -398,9 +398,12 @@
   ?f <- (ActualizandoCartera)
   (Cartera (Nombre DISPONIBLE) (Valor ?ValorDisponible) (Actualizado true))
   ?fsuma <- (Suma (Suma ?Suma))
+  ?fvalor <- (ValorTotal)
   =>
-  (printout t "El valor total de la cartera es " (+ ?Suma ?ValorDisponible) crlf)
+  (bind ?TotalCartera (+ ?Suma ?ValorDisponible) )
+  (printout t "El valor total de la cartera es " ?TotalCartera crlf)
   (modify ?fsuma (Suma 0))
+  (modify ?fvalor (Valor ?TotalCartera))
   (retract ?f)
   (assert (PrintMenu))
 )

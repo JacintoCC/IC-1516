@@ -34,17 +34,21 @@
   (Valor (Nombre ?Nombre) (Precio ?Precio) (PER ?PER) (RPD ?RPD))
   (Sector (Nombre Ibex) (PER ?PERmedio))
   (Cartera (Nombre DISPONIBLE) (Valor ?Disponible))
+  (ValorTotal (Valor ?ValorTotal))
   (test (neq ?PER 0))
   (test (> (* 0.995 ?Disponible) ?Precio))
+  (or (not (Cartera (Nombre ?Nombre)))
+      (and (Cartera (Nombre ?Nombre) (Valor ?Valor))
+           (test (< (/ ?Valor ?ValorTotal) 0.5))))
   =>
   (bind ?RE (+ (/ (*  (- ?PERmedio ?PER) 20) ?PER) (* 100 ?RPD)))
   (assert (Propuesta
       (Operacion Invertir)
       (Empresa  ?Nombre)
       (RE ?RE)
-      (Explicacion (str-cat "Esta empresa"
+      (Explicacion (str-cat "Esta empresa "
                             ?Nombre
-                            "está infravalorada y seguramente el PER tienda al PER medio en 5 años, con lo que se debería revalorizar un  "
+                            " está infravalorada y seguramente el PER tienda al PER medio en 5 años, con lo que se debería revalorizar un  "
                             ?RE
                             "% anual a lo que habría que sumar el "
                             (* 100 ?RPD)
@@ -60,6 +64,7 @@
   (Valor (Nombre ?Nombre) (Precio ?Valor) (PER ?PER) (RPD ?RPD) (Sector ?Sector) (RPA ?RPA))
   (Sector (Nombre ?Sector) (PER ?PERmedio))
   (PrecioDinero ?PrecioDinero)
+  (ValorTotal (Valor ?ValorTotal))
   (test (< ?RPA (+ 5 ?PrecioDinero)))
   (test (neq ?PER 0))
   =>
@@ -81,9 +86,14 @@
 ; Regla para proponer el cambio de un valor por otro más rentable
 (defrule CambiarInversion
   (Modulo (Indice 3))
+  (ValorTotal (Valor ?ValorTotal))
+
   ; Empresa 1
   (Valor (Nombre ?Nombre1) (RPD ?RPD1))
   (not (Sobrevalorado ?Nombre1 ?))
+  (or (not (Cartera (Nombre ?Nombre1)))
+      (and (Cartera (Nombre ?Nombre1) (Valor ?Valor))
+           (test (< (/ ?Valor ?ValorTotal) 0.5))))
 
   ;Empresa 2
   (Valor (Nombre ?Nombre2 & ~?Nombre1) (RPA ?RPA2))

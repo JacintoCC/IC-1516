@@ -159,15 +159,19 @@
   (declare (salience 40))
   (ReadCartera ?NameFile)
   ?f <- (SeguirLeyendo)
+  ?fvalor <- (ValorTotal (Valor ?ValorActual))
   =>
   (bind ?Name (read mydata))
   (retract ?f)
   (if (neq ?Name EOF) then
+    (bind ?NumAcciones (read mydata))
+    (bind ?Valor (read mydata))
     (assert (Cartera
       (Nombre ?Name)
-      (Acciones (read mydata))
-      (Valor (read mydata)))
+      (Acciones ?NumAcciones)
+      (Valor ?Valor))
     )
+    (modify ?fvalor (Valor (+ ?ValorActual ?Valor)))
     (assert (SeguirLeyendo)))
 )
 

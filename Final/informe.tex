@@ -143,13 +143,78 @@
 
 \section{Resumen}
 
+	El objetivo de esta práctica es la construcción de un sistema experto que ayude a un corredor de bolsa en la toma de decisiones diaria. El sistema tratará de maximizar el valor total de una cartera mediante operaciones de venta y compra de acciones. Para ello presentará al usuario las mejores propuestas basadas en el rendimiento que se espera obtener. 
+	
+	
 \section{Descripción del proceso de desarrollo}
 
-\subsection{Sesión 1: 25 de abril}
+\subsection{Sesión 1}
 
-\subsubsection{Información obtenida}
+	La primera sesión ha consistido en una entrevista con el directivo, el experto y el usuario sobre el sistema en general.
+	
+\paragraph{Entrevista con el directivo} Se establece que el problema consiste en ayudar a agentes novatos en su día a día para así facilitar el proceso de aprendizaje de éstos. El objetivo del sistema experto será mover acciones de una cartera para obtener la máxima rentabilidad. Se pretende también explicar qué hace y por qué, es decir, debe ser explicativo para que sea valioso.
 
-	Se obtienen en un primer momento cuestiones generales del sistema y del módulo de detección de valores peligrosos.	
+\paragraph{Entrevista con el experto} Los datos de entrada serán cuestiones como el tipo del fondo que se esté manejando, la situación económica y política actual, la tendencia de la bolsa, las hipótesis que se realicen o los puntos de inflexión. Los datos disponibles serán la evolución de los valores en los últimos seis meses y en el último año y los datos de la bolsa de Madrid. El experto nos explica que existen tres tipos de clientes según el riesgo que están dispuestos a asumir. El experto analiza situaciones y valores para hacer un análisis previo de cada empresa y facilitar así la labor de decidir qué movimiento se realizará. Para ello estimará características como ser un valor estable o inestable. Se podrá utilizar la gráfica de la web de la bolsa para aplicar un filtro sobre valores con un rápido cambio, que serán aquellos que nos permitirán ganar o dejar de perder dinero en un poco espacio de tiempo. Nos indica que la bolsa está clasificada en sectores, que influyen en la toma de decisiones. Con el objetivo de diversificar la cartera, se establece que un valor no puede tener más del 50$\%$ de una cartera. El funcionamiento del sistema influye en el propio sistema pues debe corregir sus propios errores y permitir aumentar el riesgo si está obteniendo beneficios. El experto nos cuenta que para la toma de decisiones debemos tener en cuenta que existe un coste de un $0.5\%$ sobre la cantidad de dinero por cada operación. Los valores de riesgo donde haya invertido deberán ser los primeros en ser vendidos. 
+
+\paragraph{Entrevista con el usuario} El usuario espera obtener una serie de cinco propuestas para realizar movimientos en la bolsa con el beneficio esperado y el riesgo de pérdida. Estos incluirán una explicación que permitan al usuario conocer la razón de la realización de la propuesta y así favorecer su aprendizaje. El usuario afirma que está dispuesto a introducir en el sistema la situación política del momento.\\
+
+
+De esta reunión sacamos que la entrada consiste en:
+\begin{itemize}
+\item Cartera
+\item Historial de los valores de bolsa
+\item Situación
+\end{itemize}
+
+Las acciones concretas que realizará el programa serán:
+\begin{itemize}
+\item Deshacerse de los valores tóxicos
+\item Descubrir valores prometedores
+\item Clasificar los valores estables e inestables.
+\item Clasificar las subidas y bajadas en duraderas o cortas
+\end{itemize}
+
+
+\subsection{Sesión 2}
+
+	Las preguntas generales que tenemos para esta sesión con el experto son dos, \textit{¿cómo funciona la bolsa?} y \textit{¿en base a qué se decide invertir o no en un valor?} La respuesta del experto es que se trata de vender caro y comprar barato, aprovechar las subidas y bajadas.\\
+	
+	Los módulos en los que se dividirá el programa serán los siguientes:
+	
+	\begin{itemize}
+		\item Entrada y petición de datos
+		\item Salida y muestra de resultados
+		\item Toma de decisiones para la realización de propuestas
+		\item Previsión de tendencias
+		\item Detección de grandes cambios. 
+	\end{itemize}
+
+	El proceso se llevará a cabo en varias fases:
+	
+	\begin{enumerate}
+		\item Detección de valores peligrosos
+		\item Detección de valores chollo
+		\item Detección de valores sobrevalorados
+		\item Fase de decisión
+	\end{enumerate}
+	
+	Esto no lleva a la necesidad de incluir una primera definición de los términos que estamos usando:
+	
+	\begin{definicion}[Valores peligrosos] 
+		Los valores peligrosos son aquellos que se prevee que caigan rápidamente. Estará relacionado con las noticias que se vayan produciendo.
+	\end{definicion}
+
+	\begin{definicion}[Valores sobrevalorados] 
+		Los valores sobrevalorados son aquellos que se espera que vayan a converger a su valor real más bajo, más bajo. Es una estimación de la empresa a más largo plazo. 
+	\end{definicion}
+	
+	Para la situación política se tienen en cuenta noticias generales sobre sectores o sobre un valor. Estas noticias afectarán positiva o negativamente. La actualización del SE se realizará a demanda por parte del usuario o tras un cambio sustancial. Para disponer de toda la información necesaria en el momento correspondiente, se realizará primero la detección de valores peligrosos y valores chollo, que se realizará continuamente. El análisis sobre la tendencia se realizará únicamente cuando se vaya a tomar una decisión. La detección de valores infravalorados y sobrevalorados se realizará en paralelo. En los módulos de detección de grandes cambios y la previsión de la tendencia usaremos el histórico de datos. En el módulo de decisiones se creará una lista de valores que merecen ser comprados y otra lista con aquellos a vender.\\
+	
+	El generador de propuestas concretas se actualizará con cada entrada. Este último módulo se basa el criterio de beneficio esperado. La estrategia de comprar barato y vender caro significa que hay una opción que nos beneficia. Es decir, esto puede ser quizá una única decisión que condense varios movimientos.
+		
+\subsection{Sesión 3}
+
+	Se obtienen cuestiones generales del sistema y del módulo de detección de valores peligrosos.	
 	
 \begin{enumerate}
 \item El sistema estará organizado en cuatro módulos:
@@ -205,7 +270,7 @@
 	Si un valor inestable cae durante tres días y ha caído más de un $5\%$ con respecto a su sector, se considera un valor peligroso.
 \end{regla}
 
-\subsection{Diferentes sesiones}
+\subsection{Diferentes sesiones prácticas}
 
 	Durante el resto de sesiones se han ido planteando dudas al experto a partir de la documentación con el conocimiento del SE inversor conforme éstas iban surgiendo.
 	
@@ -255,6 +320,13 @@
 \begin{regla}[Cambio por valores más rentables]
 	 Si una empresa no está sobrevalorada y su RPD es mayor que el rendimiento esperado de una empresa de mi cartera que no está infravalorada más el $1\%$ de comisión por la transacción, proponer cambiar las acciones de una empresa por las de la otra. Aquí se calcula el rendimiento esperado de una empresa con la descripción anterior.
 \end{regla}
+
+\subsection{Procedimiento de validación y verificación del sistema seguido}
+
+	El procedimiento de verificación ha consistido, en primer lugar, en probar la consistencia del sistema. Para ello se ha comprobado con cada regla que se lanza, descartando así que tengan consistencia estructural no disparable. Al correr el programa descartamos que haya un ciclo de reglas.  Así descartamos que haya inconsistencia estructural, pues la duplicación de reglas tampoco se da al haber condiciones distintas. Tampoco existe inconsistencia lógica, ya que como se explica en este informe el módulo 0 es el único lugar donde hay reglas que manejan los mismos hechos y conclusiones (noticias, valores inestables...) y se detalla porqué las reglas son necesaria y el funcionamiento es el correcto. Al comprobar cada regla se ha observado que el comportamiento es el correcto y los hechos que producen las reglas tienen sentido.\\
+	
+	El sistema también cumple con el proceso de validación pues tenemos una interfaz muy sencilla y que explica qué hay que introducir en cada situación para realizar las operaciones bursátiles. Cada hecho relacionado con las propuestas finalmente realizadas incluye una explicación de la regla que lo ha producido, por lo que el sistema es suficientemente explicativo. La ejecución es instantánea (ralentizada por la actualización de la base de hechos) así que la ejecución es en tiempo real.
+	
 
 \section{Descripción del sistema desarrollado}
 
@@ -332,7 +404,7 @@
 	
 \subsection{Conocimiento global del sistema}
 
-	El conocimiento global del sistema está compuesto por los datos de entrada y las reglas deducidas de la información extraída al experto. Se declaran también inicialmente las variables \texttt{(Contador (Indice 0))} y \texttt{(Suma (Suma 0))} para almacenar la información sobre el número de propuestas realizadas y el valor total de la cartera. Es también conocimiento global del sistema la localización de los ficheros de entrada.
+	El conocimiento global del sistema está compuesto por los datos de entrada y las reglas deducidas de la información extraída al experto. Se declaran también inicialmente las variables \texttt{(Contador (Indice 0))} y \texttt{(Suma (Suma 0))} para almacenar la información sobre el número de propuestas realizadas y el valor de la cartera que se irá acumulando. En el hecho \texttt{(ValorTotal (Valor))} almacenaremos el valor total de la cartera. Es también conocimiento global del sistema la localización de los ficheros de entrada.
 	
 \subsection{Estructura de funcionamiento del esquema de razonamiento}
 
@@ -371,12 +443,12 @@
 
 	El módulo 2 se encarga de la detección de valores sobrevalorados e infravalorados. Utiliza los hechos deducidos en los módulos anteriores y los datos de entrada de los valores. El conocimiento que aporta al sistema consiste en indicar qué valores están infravalorados y sobrevalorados, incluyendo la causa para mostrarle al usuario la explicación correspondiente.
 	
-\subsection{Módulo 3}
+\subsubsection{Módulo 3}
 
 	Este módulo es el de mayor importancia en el programa, ya que se encarga de la realización de propuestas basándonos en la información proporcionada por el experto y por tanto tendrá una mayor influencia en las operaciones que realizará el usuario. \\
 	El conocimiento que utiliza es el de los módulos anteriores. El conocimiento añadido al sistema consiste en la operación propuesta, el rendimiento esperado para dicha operación, las empresas involucradas en la operación y la explicación que se le mostrará al usuario. 
 	
-\subsection{Módulo 4}
+\subsubsection{Módulo 4}
 
 	El módulo 4 tiene como objetivo la comunicación con el usuario. La funcionalidad de este módulo consiste en mostrar la mejor propuesta y decidir si se aplica o no, recalcular las propuestas a partir del estado de la cartera, actualizar los valores de las acciones que tenemos en la cartera según los datos de la bolsa, mostrando además el valor total de la cartera, y detener el programa, pudiendo guardar la cartera actual. Para ello usaremos los ejercicios de \texttt{CLIPS} que se pidieron con el menú, selección del máximo valor, eliminación del máximo, incremento de un contador...\\
 	El conocimiento que requiere este módulo es todo el descrito anteriormente, además de la entrada introducida por el usuario. El conocimiento que aporta es la actualización de la cartera tanto por recalcular el valor total de las acciones según el precio del análisis de la bolsa (así podríamos ver la evolución de la cartera que sigue al realizar las operaciones propuestas sin descargar de nuevo el fichero \texttt{Cartera.txt}) como por los cambios introducidos por el usuario.
@@ -396,10 +468,18 @@
   (field Suma)
 )
 
+; ---------------------------------
+; Template para definir el valor total de la cartera
+; ---------------------------------
+(deftemplate ValorTotal
+  (field Valor)
+)
+
 ; Declaracion de las variables globales
 (deffacts DeclaracionVariables
   (Contador (Indice 0))
   (Suma (Suma 0))
+  (ValorTotal (Valor 0))
 )
 
 ; Declaracion de la constante Precio del dinero
@@ -435,7 +515,7 @@ Una vez que hayamos leído la cartera, se entra en el módulo 0 introduciendo el
 
 \subsubsection{Módulo 0}
 
-En el módulo 0 indicamos la estabilidad de los valores con hechos del tipo \texttt{(Inestable Nombre-valor Explicación)}. El resto  de hechos que usaremos será la existencia de noticias (buenas o malas), los valores de la bolsa y que la antigüedad sea menor o igual a dos días. 
+En el módulo 0 indicamos la estabilidad de los valores con hechos del tipo \texttt{(Inestable Nombre-valor Explicación)}. El resto  de hechos que usaremos será la existencia de noticias (buenas o malas), los valores de la bolsa y que la antigüedad sea menor a dos días. 
 
 \subsubsection{Módulo 1}
 
@@ -496,7 +576,7 @@ Para mostrar el mejor resultado (con el hecho \texttt{(Respuesta 1)}), comprobam
 
 Para recalcular propuestas según el estado de la cartera, tenemos el hecho \texttt{(Respuesta 2)}, por el que en primer lugar eliminamos las propuestas existentes y posteriormente volvemos al módulo 1.\\
 
-La última funcionalidad consiste en la actualización de la cartera. Se dispara con el hecho \texttt{(Respuesta 3)} y se modifica cada valor de la cartera, poniendo el campo \texttt{(Atributo)} a \texttt{false}. Para, una vez que hayamos realmente actualizado el valor de las acciones que tenemos no se vuelva a disparar la regla, eliminamos el hecho de la respuesta e introducimos el hecho \texttt{(ActualizandoCartera)}, que dispara la regla que actualiza cada valor y va acumulando el valor total de la cartera. Una vez que no quedan valores por actualizar, se elimina el hecho \texttt{(ActualizandoCartera)} y se muestra la suma total.\\
+La última funcionalidad consiste en la actualización de la cartera. Se dispara con el hecho \texttt{(Respuesta 3)} y se modifica cada valor de la cartera, poniendo el campo \texttt{(Atributo)} a \texttt{false}. Para, una vez que hayamos realmente actualizado el valor de las acciones que tenemos no se vuelva a disparar la regla, eliminamos el hecho de la respuesta e introducimos el hecho \texttt{(ActualizandoCartera)}, que dispara la regla que actualiza cada valor y va acumulando el valor total de la cartera. Una vez que no quedan valores por actualizar, se elimina el hecho \texttt{(ActualizandoCartera)} y muestra la suma total.\\
 
 Cada vez que realizamos una acción que no sea la salida del programa, se muestra el menú del programa para que seleccionemos la acción a ejecutar.
 
@@ -534,7 +614,7 @@ Todas las reglas de este módulo incluyen en el antecedente el hecho de que el m
 
 \paragraph{EstableValor} Si hay una noticia positiva sobre un valor marcado como inestable, se eliminará este hecho.
 
-Para todos los casos, se comprueba que la antigüedad de la noticia sea menor o igual a dos días. 
+Para todos los casos, se comprueba que la antigüedad de la noticia sea menor a dos días. 
 
 \paragraph{SalirMódulo0} Con prioridad -1, se sale del módulo 0 y se entra en el módulo 1.
 
@@ -571,11 +651,11 @@ Para todos los casos, se comprueba que la antigüedad de la noticia sea menor o 
 
 \paragraph{VentaPeligrosos} Si una empresa de la cartera es considerada peligrosa, ha caído en el último mes y la diferencia con respecto a su sector es menor que un $-3\%$, realizamos la propuesta de vender las acciones de la empresa incluyendo la explicación dada y con el rendimiento esperado de $20 - RPD\%$.
 
-\paragraph{InversiónInfravalorados} Si una empresa está infravalorada, tenemos dinero disponible en la cartera y su PER no es 0 (para poder calcular el rendimiento esperado), proponemos invertir en esta empresa. El RE es $ 20 \frac{PER_{medio} - PER}{PER} + RPD\%$.
+\paragraph{InversiónInfravalorados} Si una empresa está infravalorada, tenemos dinero disponible en la cartera para comprar al menos una acción y su PER no es 0 (para poder calcular el rendimiento esperado), proponemos invertir en esta empresa. Comprobamos también que, en caso de que tengamos acciones de la empresa, el valor total de éstas sea menor que la mitad del valor total de la cartera. El RE es $ 20 \frac{PER_{medio} - PER}{PER} + RPD\%$.
 
-\paragraph{VentaSobrevalorados} Si tenemos acciones de una empresa sobrevalorada cuyo RPA sea menor que un $5\% + $ \textit{Precio del dinero}, y PER distinto de 0, propondremos vender las acciones de la empresa. Su RE es  $ 20 \frac{PER - PER_{medio}}{PER} - RPD\%$. 
+\paragraph{VentaSobrevalorados} Si tenemos acciones de una empresa sobrevalorada cuyo RPA sea menor que un $5\% + $ \textit{Precio del dinero}, y PER distinto de 0, propondremos vender las acciones de la empresa. Su RE es  $ 20 \frac{PER - PER_{medio}}{PER} - RPD\%$. Es distinto al que dijo en un principio el experto, pero durante la validación del sistema se obtuvieron propuestas con rendimiento negativo, por lo que se le consultó al experto y éste indicó que a la fórmula le faltaba multiplicar la diferencia entre el $PER$ y el $PER_{medio}$ del sector por 100. 
 
-\paragraph{CambiarInversión} Si tenemos una empresa en la cartera que no está infravalorada y hay una empresa no sobrevalorada cuyo RPD$\%$ es mayor que el RPA de nuestra empresa +1, propondremos cambiar la inversión. Se le resta a lo invertido en la otra empresa el $1\%$ de comisión. El RE es $1+RPA_2-RPD_1\%$.
+\paragraph{CambiarInversión} Si tenemos una empresa en la cartera que no está infravalorada y hay una empresa no sobrevalorada cuyo RPD$\%$ es mayor que el RPA de nuestra empresa +1, propondremos cambiar la inversión. Comprobamos también previamente que, en caso de que ya  tengamos acciones de la empresa por la que vamos a intercambiar nuestras acciones, el valor total de éstas sea menor que la mitad del valor total de la cartera. Se le resta a lo invertido en la otra empresa el $1\%$ de comisión. El RE es $1+RPA_2-RPD_1\%$.
 
 \paragraph{SalirMódulo3} Con prioridad -1, se sale del módulo 3 y se entra en el módulo 4
 
@@ -589,7 +669,7 @@ Para todos los casos, se comprueba que la antigüedad de la noticia sea menor o 
 
 \paragraph{NoOption} Si la respuesta recogida no está en el menú, se muestra un mensaje diciendo que la opción es incorrecta y se indica el hecho para sacar por pantalla el menú de nuevo.
 
-\paragraph{Salir} Si la respuesta es 0 se pide confirmación para salir del programa, si la respuesta es \texttt{S} o \texttt{s}, pregunta si se quiere guardar el estado de la cartera. En caso de que la respuesta sea afirmativa, se abre el fichero \texttt{Datos/CarteraMod.txt} y se introduce el hecho \texttt{(Guardar)}, si no, simplemente se detiene la ejecución. Si la respuesta a la salida es negativa, se vuelve al menú.
+\paragraph{Salir} Si la respuesta es 0 se pide confirmación para salir del programa, si la respuesta es \texttt{S} o \texttt{s}, pregunta si se quiere guardar el estado de la cartera. En caso de que la respuesta sea afirmativa, se abre el fichero \texttt{Datos/CarteraMod.txt} y se introduce el hecho \texttt{(Guardar)}, si no, simplemente se detiene la ejecución. Si la respuesta a la salida es negativa, se vuelve al menú. Si quisiéramos salir realmente del entorno \texttt{CLIPS} y no sólo detener la ejecución podríamos incluir una regla con prioridad -1 para haga una llamada a la función \texttt{(exit)}).
 
 \paragraph{guardarDisponible} Con prioridad 3, si se ha indicado que se desea guardar la cartera, se toma el valor del dinero disponible y se escribe en el fichero (así nos aseguramos que el fichero con la cartera mantenga el formato).
 
@@ -603,9 +683,14 @@ Para todos los casos, se comprueba que la antigüedad de la noticia sea menor o 
 
 \paragraph{VentaAcciones} Si hay una operación de venta de acciones de una empresa que tenemos en cartera, actualizamos el dinero disponible en la cartera, quitamos el valor de la cartera e introducimos el hecho que nos permita descartar la venta de las acciones que ya hemos vendido.
 
-\paragraph{EfectuarInversión} Si hay una operación de inversión en una empresa, se le pide al usuario que introduzca el dinero que pretende invertir en la empresa. Se calcula el número de acciones que se puede comprar con ese dinero (teniendo en cuenta la comisión) y se añade el valor de la bolsa a la cartera. Se resta del dinero disponible lo que finalmente se gasta en las acciones. Se descartan también las propuestas que significan la compra de acciones de esta empresa para así tratar de diversificar la cartera.
+\paragraph{EfectuarInversiónNuevoValor} Si hay una operación de inversión en una empresa de la no tenemos acciones, se le pide al usuario que introduzca el dinero que pretende invertir en la empresa. Se calcula el número de acciones que se puede comprar con ese dinero (teniendo en cuenta la comisión) y se añade a la cartera el hecho con el número de acciones compradas y su valor. Se resta del dinero disponible lo que finalmente se gasta en las acciones. Se descartan también las propuestas que significan la compra de más acciones de esta empresa para así tratar de diversificar la cartera.
 
-\paragraph{IntercambioValores} Si hay una operación de intercambio entre dos valores, se eliminan de la cartera las acciones que vendemos, calculamos el número de acciones a comprar teniendo en cuenta las dos comisiones que debemos pagar ahora. Sumamos al dinero disponible en la cartera si hubiera algún pico (sólo compramos un número entero de acciones). Descartamos la venta de las acciones que ya no poseemos y la compra de más acciones de la empresa de la que hemos adquirido.
+\paragraph{EfectuarInversión} Si hay una operación de inversión en una empresa de la que ya tenemos acciones, se le pide al usuario que introduzca el dinero que pretende invertir en la empresa. Se calcula el número de acciones que se puede comprar con ese dinero (teniendo en cuenta la comisión) y se añade al hecho que tenemos en la cartera con las acciones de esta empresa las acciones que hemos comprado y su valor. Se resta del dinero disponible lo que finalmente se gasta en las acciones. Se descartan también las propuestas que significan la compra de más acciones de esta empresa para así tratar de diversificar la cartera.
+
+\paragraph{IntercambioValoresNuevoValor} Si hay una operación de intercambio entre dos valores y no tenemos acciones del valor del que vamos a comprar acciones, se eliminan de la cartera las acciones que vendemos, calculamos el número de acciones a comprar teniendo en cuenta las dos comisiones que debemos pagar ahora. Sumamos al dinero disponible en la cartera si hubiera algún pico (sólo compramos un número entero de acciones). Descartamos la venta de las acciones que ya no poseemos y la compra de más acciones de la empresa de la que hemos adquirido. Añadimos el hecho a la cartera con el número de acciones y su valor.
+
+
+\paragraph{IntercambioValores} Si hay una operación de intercambio entre dos valores y ya tenemos acciones del valor del que vamos a comprar acciones, se eliminan de la cartera las acciones que vendemos, calculamos el número de acciones a comprar teniendo en cuenta las dos comisiones que debemos pagar ahora. Sumamos al dinero disponible en la cartera si hubiera algún pico (sólo compramos un número entero de acciones). Descartamos la venta de las acciones que ya no poseemos y la compra de más acciones de la empresa de la que hemos adquirido. Modificamos el hecho de la cartera con el número total de acciones y el total del valor.
 
 \paragraph{DescartarVentaTrasOperación} Para toda empresa que se haya indicado que debemos descartar su venta, eliminamos las propuestas de ventas.
 
@@ -614,6 +699,9 @@ Para todos los casos, se comprueba que la antigüedad de la noticia sea menor o 
 \paragraph{StopDescartarVenta} Si no hay propuestas de ventas o intercambios de una empresa sobre la que hemos indicado que debemos descartar los hechos, se elimina el hecho de descartar ventas de la empresa. Posteriormente se accede al menú.
 
 \paragraph{DescartarCompraTrasOperación} Si hemos descartado la compra de acciones de una empresa, eliminamos los hechos que signifiquen la inversión o el intercambio de acciones de esta empresa por una que poseamos.
+
+\paragraph{DescartarCompraInsuficienciaDinero} Si hemos realizado una compra y hay propuestas de realizar una inversión en una empresa pero el precio de la acción (más el 0.5$\%$ de comisión) es mayor que el dinero disponible en la cartera, descartaremos esta propuesta.
+
 
 \paragraph{StopDescartarCompra} Si hemos introducido el hecho de descartar la compra de una empresa y ya no hay propuestas de inversión o intercambio de acciones de esa empresa, se elimina el hecho de descartar estas operaciones sobre la empresa. Se accede al menú.
 

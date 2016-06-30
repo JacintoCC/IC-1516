@@ -107,16 +107,24 @@
 )
 
 ; ---------------------------------
-; Template para llevar la suma del valor de las acciones
+; Template para acarrear la suma del valor de las acciones
 ; ---------------------------------
 (deftemplate Suma
   (field Suma)
+)
+
+; ---------------------------------
+; Template para definir el valor total de la cartera
+; ---------------------------------
+(deftemplate ValorTotal
+  (field Valor)
 )
 
 ; Declaración de las variables globales
 (deffacts DeclaracionVariables
   (Contador (Indice 0))
   (Suma (Suma 0))
+  (ValorTotal (Valor 0))
 )
 
 ; Declaración de la constante Precio del dinero

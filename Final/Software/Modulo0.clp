@@ -26,11 +26,11 @@
   (Modulo (Indice 0))
   (Valor (Nombre ?Nombre) (Sector Construccion))
   (not (and (Noticia (Nombre Economia) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   (not (and (Noticia (Nombre ?Nombre) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   (not (and (Noticia (Nombre Construccion) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   =>
   (assert (Inestable ?Nombre " pertenece al sector de la construcción "))
 )
@@ -42,11 +42,11 @@
   (Sector (Nombre Ibex) (Perd5Consec true))
   (Valor (Nombre ?Nombre) (Sector Servicios))
   (not (and (Noticia (Nombre Economia) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   (not (and (Noticia (Nombre ?Nombre) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   (not (and (Noticia (Nombre Servicios) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   =>
   (assert (Inestable ?Nombre " pertenece al sector servicios y la economía está bajando "))
 )
@@ -58,9 +58,9 @@
   (Noticia (Nombre Economia) (Tipo Mala))
   (Valor (Nombre ?NombreValor) (Sector ?NombreSector))
   (not (and (Noticia (Nombre ?Nombre) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   (not (and (Noticia (Nombre ?NombreSector) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   =>
   (assert (Inestable ?NombreValor " ha habido una noticia mala sobre la economía "))
 )
@@ -72,7 +72,7 @@
   (Noticia (Nombre ?Sector) (Tipo Mala))
   (Valor (Nombre ?NombreValor) (Sector ?Sector))
   (not (and (Noticia (Nombre ?Nombre) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   =>
   (assert (Inestable ?NombreValor (str-cat " ha habido una noticia mala sobre el sector " ?Sector)))
 )
@@ -85,7 +85,7 @@
   (Valor (Nombre ?NombreValor) (Sector ?Sector))
   ?f <- (Inestable ?NombreValor ?)
   (not (and (Noticia (Nombre ?Nombre) (Tipo Mala) (Antiguedad ?A))
-            (test (<= ?A 2))))
+            (test (< ?A 2))))
   =>
   (retract ?f)
 )
@@ -95,7 +95,7 @@
 (defrule InestableValor
   (Modulo (Indice 0))
   (Noticia (Nombre ?NombreValor) (Tipo Mala) (Antiguedad ?A))
-  (test (<= ?A 2))
+  (test (< ?A 2))
   (Valor (Nombre ?NombreValor))
   =>
   (assert (Inestable ?NombreValor " ha habido una noticia negativa sobre el valor"))
@@ -106,7 +106,7 @@
 (defrule EstableValor
   (Modulo (Indice 0))
   (Noticia (Nombre ?NombreValor) (Tipo Buena) (Antiguedad ?A))
-  (test (<= ?A 2))
+  (test (< ?A 2))
   (Valor (Nombre ?NombreValor))
   ?f <- (Inestable ?NombreValor ?)
   =>
